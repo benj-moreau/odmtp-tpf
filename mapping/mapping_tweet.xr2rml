@@ -1,0 +1,37 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix xrr: <http://www.i3s.unice.fr/ns/xr2rml#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org> .
+@prefix ex: <http://example.org> .
+@prefix it: <http://www.influencetracker.com/ontology#> .
+
+<#Tweets>
+  xrr:logicalSource [
+    xrr:query "https://api.twitter.com/1.1/search/tweets.json";
+    rml:iterator "$.statuses.*";
+  ];
+  rr:subjectMap [
+    rr:template "http://example.org/tweet/{$.id_str}";
+    rr:class schema:SocialMediaPosting;
+  ];
+  rr:predicateObjectMap [
+    rr:predicate schema:articleBody;
+    rr:objectMap [ xrr:reference "$.text"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate schema:author;
+    rr:objectMap [ xrr:reference "$.user.name"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate schema:dateCreated;
+    rr:objectMap [ xrr:reference "$.created_at"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate it:includedHashtag;
+    rr:objectMap [ xrr:reference "$.entities.hashtags.*.text"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate it:includedUrl;
+    rr:objectMap [ xrr:reference "$.entities.urls.*.expanded_url"; ];
+  ];
