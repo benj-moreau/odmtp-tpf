@@ -1,10 +1,12 @@
 class Odmtrip(object):
 
-    def __init__(self, trimmer, tp2query, mapper, tpq):
+    def __init__(self, trimmer, tp2query, mapper):
         self.trimmer = trimmer
         self.tp2query = tp2query
         self.mapper = mapper
 
-    def match(tpq, fragment):
-        mapping = None
-        pass
+    def match(self, tpq, fragment):
+        reduced_mapping = self.trimmer.get_reduced_mapping(tpq)
+        result_set = self.tp2query.request(tpq, reduced_mapping, fragment)
+        self.mapper.result_set_2_rdf(result_set, reduced_mapping, fragment)
+        return fragment

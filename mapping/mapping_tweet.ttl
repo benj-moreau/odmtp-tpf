@@ -34,4 +34,4 @@
   rr:predicateObjectMap [
     rr:predicate it:includedUrl;
     rr:objectMap [ xrr:reference "$.entities.urls.*.expanded_url"; ];
-  ];
+  ].
