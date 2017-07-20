@@ -1,5 +1,7 @@
 from rdflib import Graph, URIRef, Namespace, RDF
 
+from utils.xr2rml_mapping import Xr2rmlMapping
+
 rr = Namespace("http://www.w3.org/ns/r2rml#")
 rml = Namespace("http://semweb.mmlab.be/ns/rml#")
 xrr = Namespace("http://www.i3s.unice.fr/ns/xr2rml#")
@@ -18,17 +20,7 @@ class Xr2rmlMapper(object):
         self._preprocess_mapping()
 
     def get_mapping(self):
-        return self.preprocessed_mapping
-
-    def get_logical_sources(self):
-        return self.logical_sources
-
-    def print_pre_mapping(self):
-        print self.logical_sources
-        for s, p, o in self.preprocessed_mapping:
-            print "s=%s" % s
-            print "p=%s" % p
-            print "o=%s" % o
+        return Xr2rmlMapping(self.preprocessed_mapping, self.logical_sources)
 
     def _preprocess_mapping(self):
         resources = []

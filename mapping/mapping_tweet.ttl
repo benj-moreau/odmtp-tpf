@@ -2,8 +2,8 @@
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix xrr: <http://www.i3s.unice.fr/ns/xr2rml#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix schema: <http://schema.org> .
-@prefix ex: <http://example.org> .
+@prefix schema: <http://schema.org/> .
+@prefix ex: <http://example.org/> .
 @prefix it: <http://www.influencetracker.com/ontology#> .
 
 <#Tweets>
