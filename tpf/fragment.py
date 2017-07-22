@@ -14,5 +14,14 @@ class Fragment(object):
     def add_data_triple(self, subject, predicate, obj):
         self.rdf_graph.add((subject, predicate, obj))
 
+    def add_graph(self, identifier):
+        self.rdf_graph.graph(identifier)
+
+    def add_meta_quad(self, graph, subject, predicate, obj):
+        self.rdf_graph.add((graph, subject, predicate, obj))
+
+    def add_prefix(self, prefix, uri):
+        self.rdf_graph.bind(prefix, uri)
+
     def serialize(self):
         return self.rdf_graph.serialize(format="trig", encoding="utf-8")

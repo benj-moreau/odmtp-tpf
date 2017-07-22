@@ -1,8 +1,8 @@
 from odmtrip.odmtrip import Odmtrip
 from odmtrip.modules.trimmer_xr2rml import TrimmerXr2rml
+from odmtrip.modules.tp2query_twitter import Tp2QueryTwitter
 from tpf.tpq import TriplePatternQuery
 from tpf.fragment import Fragment
-from utils.twitter_api import TwitterApi
 
 from django.http.response import HttpResponse
 from django.views.decorators.http import require_http_methods
@@ -14,12 +14,9 @@ def tpf_server(request):
                              request.GET.get('subject'),
                              request.GET.get('predicate'),
                              request.GET.get('object'))
-    print tpq.predicate
     fragment = Fragment()
     reduced_mapping = TrimmerXr2rml().get_reduced_mapping(tpq)
-    # twitter = TwitterApi()
-    # print twitter.request("https://api.twitter.com/1.1/search/tweets.json?q=%23iswc2017")
-
+    result_set = Tp2QueryTwitter().request(tpq, reduced_mapping, fragment)
     response = HttpResponse(
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')

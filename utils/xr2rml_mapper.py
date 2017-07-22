@@ -41,8 +41,9 @@ class Xr2rmlMapper(object):
                             for reference in self.mapping.objects(subject=object_map, predicate=xrr.reference):
                                 self.preprocessed_mapping.add((subject, predicate, reference))
                 for node in self.mapping.objects(subject=s, predicate=xrr.logicalSource):
-                    self.logical_sources[subject] = {}
+                    subject_prefix = subject.split('{')[0]
+                    self.logical_sources[subject_prefix] = {}
                     for query in self.mapping.objects(subject=node, predicate=xrr.query):
-                        self.logical_sources[subject]['query'] = query
+                        self.logical_sources[subject_prefix]['query'] = query
                     for iterator in self.mapping.objects(subject=node, predicate=rml.iterator):
-                        self.logical_sources[subject]['iterator'] = iterator
+                        self.logical_sources[subject_prefix]['iterator'] = iterator

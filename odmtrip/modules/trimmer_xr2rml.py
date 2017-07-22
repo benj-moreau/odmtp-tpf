@@ -1,8 +1,9 @@
 from utils.xr2rml_mapper import Xr2rmlMapper
+from odmtrip.modules.trimmer import Trimmer
 from rdflib import URIRef
 
 
-class TrimmerXr2rml(object):
+class TrimmerXr2rml(Trimmer):
 
     def get_reduced_mapping(self, tpq):
         xr2rml_mapping = Xr2rmlMapper('./mapping/mapping_tweet.ttl').get_mapping()
@@ -17,8 +18,8 @@ class TrimmerXr2rml(object):
                 subject_prefix = s.split('{')[0]
                 if not tpq.subject.startswith(subject_prefix):
                     xr2rml_mapping.mapping.remove((s, p, o))
-        if tpq.object is not None and type(tpq.object) is URIRef:
+        if tpq.obj is not None and type(tpq.obj) is URIRef:
             object_prefix = s.split('{')[0]
             for s, p, o in xr2rml_mapping.mapping:
-                if not tpq.object.startswith(object_prefix):
+                if not tpq.obj.startswith(object_prefix):
                     xr2rml_mapping.mapping.remove((s, p, o))

@@ -8,7 +8,7 @@
 
 <#Tweets>
   xrr:logicalSource [
-    xrr:query "https://api.twitter.com/1.1/search/tweets.json";
+    xrr:query "https://api.twitter.com/1.1/";
     rml:iterator "$.statuses.*";
   ];
   rr:subjectMap [
@@ -21,7 +21,7 @@
   ];
   rr:predicateObjectMap [
     rr:predicate schema:author;
-    rr:objectMap [ xrr:reference "$.user.name"; ];
+    rr:objectMap [ xrr:reference "$.entities.user_mention[0].screen_name"; ];
   ];
   rr:predicateObjectMap [
     rr:predicate schema:dateCreated;

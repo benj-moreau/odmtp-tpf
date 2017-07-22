@@ -32,9 +32,9 @@ class TriplePatternQuery(object):
         """Return RDFlib.URIRef predicate."""
         return self.predicate
 
-    def object(self):
+    def obj(self):
         """Return RDFlib.URIRef or RDFlib.Literal object."""
-        return self.object
+        return self.obj
 
 
 def string_to_literal(string, urlvalidator):
