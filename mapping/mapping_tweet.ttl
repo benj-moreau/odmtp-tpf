@@ -21,7 +21,7 @@
   ];
   rr:predicateObjectMap [
     rr:predicate schema:author;
-    rr:objectMap [ xrr:reference "$.entities.user_mention[0].screen_name"; ];
+    rr:objectMap [ xrr:reference "$.user.screen_name"; ];
   ];
   rr:predicateObjectMap [
     rr:predicate schema:dateCreated;
@@ -29,9 +29,9 @@
   ];
   rr:predicateObjectMap [
     rr:predicate it:includedHashtag;
-    rr:objectMap [ xrr:reference "$.entities.hashtags.*.text"; ];
+    rr:objectMap [ xrr:reference "$.entities.hashtags.[*].text"; ];
   ];
   rr:predicateObjectMap [
     rr:predicate it:includedUrl;
-    rr:objectMap [ xrr:reference "$.entities.urls.*.expanded_url"; ];
+    rr:objectMap [ xrr:reference "$.entities.urls.[*].expanded_url"; ];
   ].

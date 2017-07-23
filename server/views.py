@@ -1,6 +1,7 @@
 from odmtrip.odmtrip import Odmtrip
 from odmtrip.modules.trimmer_xr2rml import TrimmerXr2rml
 from odmtrip.modules.tp2query_twitter import Tp2QueryTwitter
+from odmtrip.modules.mapper_twitter_xr2rml import MapperTwitterXr2rml
 from tpf.tpq import TriplePatternQuery
 from tpf.fragment import Fragment
 
@@ -15,8 +16,7 @@ def tpf_server(request):
                              request.GET.get('predicate'),
                              request.GET.get('object'))
     fragment = Fragment()
-    reduced_mapping = TrimmerXr2rml().get_reduced_mapping(tpq)
-    result_set = Tp2QueryTwitter().request(tpq, reduced_mapping, fragment)
+    Odmtrip(TrimmerXr2rml(), Tp2QueryTwitter(), MapperTwitterXr2rml()).match(tpq, fragment)
     response = HttpResponse(
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')

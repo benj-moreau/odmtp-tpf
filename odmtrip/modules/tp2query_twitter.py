@@ -17,11 +17,15 @@ TWITTER_OPERATORS = {
     '$.entities.user_mention[0].screen_name': 'from:%s'
 }
 
-BASE_QUERY = 'politics filter:safe'
+BASE_QUERY = 'filter:safe'
 
-TWEETS_PER_PAGE = 25
+TWEETS_PER_PAGE = 100
 
 TPF_URL = 'http://127.0.0.1:8000/'
+
+# twitter search API returns top 15000 tweets matching query
+# So i set up a limit to count maximum number of result (TWEETS_PER_PAGE * LAST_PAGE)
+LAST_PAGE = 5
 
 
 class Tp2QueryTwitter(Tp2Query):
@@ -30,6 +34,7 @@ class Tp2QueryTwitter(Tp2Query):
         last_result = False
         result_set = None
         query_parameters = {}
+        number_of_triples_per_tweets = len(reduced_mapping.mapping)
         twitter = TwitterApi()
         for subject_prefix in reduced_mapping.logical_sources:
             if tpq.subject is None or tpq.subject.startswith(subject_prefix):
@@ -40,6 +45,7 @@ class Tp2QueryTwitter(Tp2Query):
             result_set = twitter.request(query_url)
             result_set = "[%s]" % result_set
             last_result = True
+            total_nb_triples = len(result_set) * number_of_triples_per_tweets
         else:
             q = BASE_QUERY
             if tpq.obj:
@@ -53,7 +59,7 @@ class Tp2QueryTwitter(Tp2Query):
             query_parameters['count'] = TWEETS_PER_PAGE
             query_url = "%s%s" % (query_url, TWEET_SEARCH)
             parameters = "?%s" % urlencode(query_parameters)
-            for i in range(tpq.page - 1):
+            for i in range(tpq.page):
                 result_set = twitter.request("%s%s" % (query_url, parameters))
                 if 'next_results' in result_set['search_metadata']:
                     parameters = result_set['search_metadata']['next_results']
@@ -61,12 +67,14 @@ class Tp2QueryTwitter(Tp2Query):
                     last_result = True
                     break
             result_set = result_set['statuses']
-            # a changer !!!!! total number of results ?????
-            nb_results = 40
-            self._frament_fill_meta(tpq, fragment, last_result, nb_results, TWEETS_PER_PAGE * len(reduced_mapping.mapping))
+            if tpq.page >= LAST_PAGE:
+                last_result = True
+            total_nb_triples = TWEETS_PER_PAGE * LAST_PAGE * number_of_triples_per_tweets
+        nb_triple_per_page = TWEETS_PER_PAGE * number_of_triples_per_tweets
+        self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, nb_triple_per_page)
         return result_set
 
-    def _frament_fill_meta(self, tpq, fragment, last_result, nb_results, max_triples_per_pages):
+    def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page):
         meta_graph = self._tpf_uri('metadata')
         fragment.add_graph(meta_graph)
         source = self._tpf_uri()
@@ -107,9 +115,9 @@ class Tp2QueryTwitter(Tp2Query):
         fragment.add_meta_quad(source, DCTERMS['title'], Literal("TPF Twitter search API 1.1"), meta_graph)
         fragment.add_meta_quad(source, DCTERMS['description'], Literal("Triple Pattern from the twitter api matching the pattern {?s=%s, ?p=%s, ?o=%s}" % (tpq.subject, tpq.predicate, tpq.obj)), meta_graph)
         fragment.add_meta_quad(source, DCTERMS['source'], data_graph, meta_graph)
-        fragment.add_meta_quad(source, HYDRA['totalItems'], Literal(nb_results, datatype=XSD.int), meta_graph)
-        fragment.add_meta_quad(source, VOID['triples'], Literal(nb_results, datatype=XSD.int), meta_graph)
-        fragment.add_meta_quad(source, HYDRA['itemsPerPage'], Literal(max_triples_per_pages, datatype=XSD.int), meta_graph)
+        fragment.add_meta_quad(source, HYDRA['totalItems'], Literal(total_nb_triples, datatype=XSD.int), meta_graph)
+        fragment.add_meta_quad(source, VOID['triples'], Literal(total_nb_triples, datatype=XSD.int), meta_graph)
+        fragment.add_meta_quad(source, HYDRA['itemsPerPage'], Literal(nb_triple_per_page, datatype=XSD.int), meta_graph)
         fragment.add_meta_quad(source, HYDRA['first'], self._tpf_url(dataset_base, 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
         if tpq.page > 1:
             fragment.add_meta_quad(source, HYDRA['previous'], self._tpf_url(dataset_base, tpq.page - 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)

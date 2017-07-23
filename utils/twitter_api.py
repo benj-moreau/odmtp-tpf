@@ -25,14 +25,12 @@ class TwitterApi(object):
         """Send an authenticated request to the Twitter API."""
         if not self.access_token:
             self.access_token = self._get_access_token()
-
         request = Request(url)
         request.add_header('Authorization', 'Bearer %s' % self.access_token)
         try:
             response = urlopen(request)
         except HTTPError:
             raise ClientException
-
         raw_data = response.read().decode('utf-8')
         data = json.loads(raw_data)
         return data
