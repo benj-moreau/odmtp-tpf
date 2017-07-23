@@ -1,0 +1,2 @@
+jsonpath-rw==1.4.0
+rdflib==4.2.2
