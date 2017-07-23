@@ -12,7 +12,7 @@
     rml:iterator "$.statuses.*";
   ];
   rr:subjectMap [
-    rr:template "http://example.org/tweet/{$.id_str}";
+    rr:template "https://twitter.com/statuses/{$.id_str}";
     rr:class schema:SocialMediaPosting;
   ];
   rr:predicateObjectMap [

@@ -21,4 +21,5 @@ def tpf_server(request):
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="fragment.trig"'
+    response['Access-Control-Allow-Origin'] = '*'
     return response

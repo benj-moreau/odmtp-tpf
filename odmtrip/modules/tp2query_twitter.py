@@ -12,14 +12,14 @@ TWEET_LOOKUP = "statuses/show/%s.json"
 # see https://dev.twitter.com/rest/public/search
 TWITTER_OPERATORS = {
     '$.text': '"%s"',
-    '$.entities.hashtags.*.text': '#%s',
-    '$.entities.urls.*.expanded_url': 'url:%s',
-    '$.entities.user_mention[0].screen_name': 'from:%s'
+    '$.entities.hashtags.[*].text': '#%s',
+    '$.entities.urls.[*].expanded_url': 'url:%s',
+    '$.user.screen_name': 'from:%s'
 }
 
 BASE_QUERY = 'filter:safe'
 
-TWEETS_PER_PAGE = 100
+TWEETS_PER_PAGE = 10
 
 TPF_URL = 'http://127.0.0.1:8000/'
 
@@ -43,7 +43,7 @@ class Tp2QueryTwitter(Tp2Query):
             tweet_id = tpq.subject.rpartition('/')[2]
             query_url = "%s%s" % (query_url, TWEET_LOOKUP % tweet_id)
             result_set = twitter.request(query_url)
-            result_set = "[%s]" % result_set
+            result_set = [result_set]
             last_result = True
             total_nb_triples = len(result_set) * number_of_triples_per_tweets
         else:
