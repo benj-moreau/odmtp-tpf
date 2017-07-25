@@ -1,7 +1,7 @@
 from jsonpath_rw import parse
 from rdflib import URIRef, Literal
 
-from odmtrip.modules.mapper import Mapper
+from odmtp.modules.mapper import Mapper
 
 
 class MapperTwitterXr2rml(Mapper):

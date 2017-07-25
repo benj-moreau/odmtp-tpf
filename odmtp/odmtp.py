@@ -1,4 +1,4 @@
-class Odmtrip(object):
+class Odmtp(object):
 
     def __init__(self, trimmer, tp2query, mapper):
         self.trimmer = trimmer

@@ -1,5 +1,5 @@
 from utils.xr2rml_mapper import Xr2rmlMapper
-from odmtrip.modules.trimmer import Trimmer
+from odmtp.modules.trimmer import Trimmer
 from rdflib import URIRef
 
 

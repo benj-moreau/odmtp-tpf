@@ -2,7 +2,7 @@ from rdflib import URIRef, Literal, Namespace, BNode, RDF, XSD
 from urllib import urlencode
 
 from utils.twitter_api import TwitterApi
-from odmtrip.modules.tp2query import Tp2Query
+from odmtp.modules.tp2query import Tp2Query
 
 
 TWEET_SEARCH = "search/tweets.json"

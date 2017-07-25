@@ -51,7 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'odmtrip_tpf_server.urls'
+ROOT_URLCONF = 'odmtp_tpf_server.urls'
 
 TEMPLATES = [
     {
@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'odmtrip_tpf_server.wsgi.application'
+WSGI_APPLICATION = 'odmtp_tpf_server.wsgi.application'
 
 
 # Database
