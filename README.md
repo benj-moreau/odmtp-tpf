@@ -41,10 +41,34 @@ to run SPARQL queries over twitter (https://dev.twitter.com/rest/public/search)
 
 For exemple you can run this SPARQL querie over http://127.0.0.1:8000/ to retrieve tweets using #iswc2017 hashtag.
 ```sparql
-PREFIX schema: <http://schema.org/> 
 PREFIX it: <http://www.influencetracker.com/ontology#>
 
 SELECT ?s WHERE {
- ?s <http://www.influencetracker.com/ontology#includedHashtag> "iswc2017".
+ {?s it:includedHashtag "ISWC2017".} UNION {?s it:includedHashtag "iswc2017".}
 }
 ```
+
+Retrieve tweets from a specific user.
+```sparql
+PREFIX schema: <http://schema.org/>
+
+SELECT ?s WHERE {
+ ?s schema:author "NantesTech".
+}
+```
+
+s-p-o query to browse tweets
+```sparql
+SELECT ?s ?p ?o WHERE {
+ ?s ?p ?o
+}
+```
+
+To retrieve a specific tweet by ID
+```sparql
+SELECT ?p ?o WHERE {
+ <https://twitter.com/statuses/889775221452005377> ?p ?o
+}
+```
+
+
