@@ -39,7 +39,7 @@ The TPF server should run at: http://127.0.0.1:8000/
 You can use any Triple Pattern Fragment client: http://linkeddatafragments.org/software/
 to run SPARQL queries over twitter (https://dev.twitter.com/rest/public/search)
 
-For exemple you can run this SPARQL querie over http://127.0.0.1:8000/ to retrieve tweets using #iswc2017 hashtag.
+For exemple you can run this SPARQL query over http://127.0.0.1:8000/ to retrieve tweets using #iswc2017 hashtag.
 ```sparql
 PREFIX it: <http://www.influencetracker.com/ontology#>
 
@@ -57,7 +57,7 @@ SELECT ?s WHERE {
 }
 ```
 
-s-p-o query to browse tweets
+SPO query to browse tweets
 ```sparql
 SELECT ?s ?p ?o WHERE {
  ?s ?p ?o
