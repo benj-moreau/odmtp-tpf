@@ -1,8 +1,8 @@
-# ODMTriP TPF Server
+# ODMTP TPF Server
 
-odmtrip-tpf is a Triple Pattern Fragment server using Python, Django and ODMTriP.
+odmtp-tpf is a Triple Pattern Fragment server using Python, Django and ODMTP.
 
-ODMTriP (On Demand Mapper with Triple pattern matching) enables triple pattern matching over non-RDF datasources.
+ODMTP (On Demand Mapper with Triple pattern matching) enables triple pattern matching over non-RDF datasources.
 
 
 # Instructions
@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 ## Running The Platform
 #### macOS & Ubuntu
-From `~/odmtrip-tpf` run the comand:
+From `~/odmtp-tpf` run the comand:
 ```bash
 python manage.py runserver
 ```
