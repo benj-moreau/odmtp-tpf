@@ -11,7 +11,7 @@ ODMTP (On Demand Mapper with Triple pattern matching) enables triple pattern mat
 #### macOS
 You need to install [Homebrew](http://brew.sh/).
 
-and then install Python:
+and then install Python 2.7:
 ```bash
 brew install python
 ```
