@@ -19,7 +19,7 @@ TWITTER_OPERATORS = {
 
 BASE_QUERY = 'filter:safe'
 
-TWEETS_PER_PAGE = 10
+TWEETS_PER_PAGE = 1
 
 TPF_URL = 'http://127.0.0.1:8000/'
 
@@ -77,8 +77,11 @@ class Tp2QueryTwitter(Tp2Query):
     def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page):
         meta_graph = self._tpf_uri('metadata')
         fragment.add_graph(meta_graph)
-        source = self._tpf_uri()
         dataset_base = self._tpf_uri()
+        if tpq.page == 1:
+            source = dataset_base
+        else:
+            source = self._tpf_url(dataset_base, tpq.page, tpq.subject, tpq.predicate, tpq.obj)
         dataset_template = Literal('%s%s' % (dataset_base, '{?subject,predicate,object}'))
         data_graph = self._tpf_uri('dataset')
         tp_node = BNode('triplePattern')
@@ -95,7 +98,6 @@ class Tp2QueryTwitter(Tp2Query):
         fragment.add_meta_quad(data_graph, RDF.type, VOID['Dataset'], meta_graph)
         fragment.add_meta_quad(data_graph, RDF.type, HYDRA['Collection'], meta_graph)
         fragment.add_meta_quad(data_graph, VOID['subset'], source, meta_graph)
-        fragment.add_meta_quad(data_graph, VOID['subset'], dataset_base, meta_graph)
         fragment.add_meta_quad(data_graph, VOID['uriLookupEndpoint'], dataset_template, meta_graph)
         fragment.add_meta_quad(data_graph, HYDRA['search'], tp_node, meta_graph)
         fragment.add_meta_quad(tp_node, HYDRA['template'], dataset_template, meta_graph)
