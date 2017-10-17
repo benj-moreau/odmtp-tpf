@@ -5,7 +5,7 @@ class Odmtp(object):
         self.tp2query = tp2query
         self.mapper = mapper
 
-    def match(self, tpq, fragment):
+    def match(self, tpq, fragment, request):
         reduced_mapping = self.trimmer.get_reduced_mapping(tpq)
-        result_set = self.tp2query.request(tpq, reduced_mapping, fragment)
+        result_set = self.tp2query.request(tpq, reduced_mapping, fragment, request)
         self.mapper.result_set_2_rdf(result_set, reduced_mapping, fragment)

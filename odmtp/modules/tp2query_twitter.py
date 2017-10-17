@@ -19,7 +19,7 @@ TWITTER_OPERATORS = {
 
 BASE_QUERY = 'filter:safe'
 
-TWEETS_PER_PAGE = 1
+TWEETS_PER_PAGE = 5
 
 TPF_URL = 'http://127.0.0.1:8000/'
 
@@ -30,7 +30,7 @@ LAST_PAGE = 5
 
 class Tp2QueryTwitter(Tp2Query):
 
-    def request(self, tpq, reduced_mapping, fragment):
+    def request(self, tpq, reduced_mapping, fragment, request):
         last_result = False
         result_set = None
         query_parameters = {}
@@ -71,17 +71,14 @@ class Tp2QueryTwitter(Tp2Query):
                 last_result = True
             total_nb_triples = TWEETS_PER_PAGE * LAST_PAGE * number_of_triples_per_tweets
         nb_triple_per_page = TWEETS_PER_PAGE * number_of_triples_per_tweets
-        self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, nb_triple_per_page)
+        self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request)
         return result_set
 
-    def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page):
+    def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request):
         meta_graph = self._tpf_uri('metadata')
         fragment.add_graph(meta_graph)
         dataset_base = self._tpf_uri()
-        if tpq.page == 1:
-            source = dataset_base
-        else:
-            source = self._tpf_url(dataset_base, tpq.page, tpq.subject, tpq.predicate, tpq.obj)
+        source = URIRef(request.build_absolute_uri())
         dataset_template = Literal('%s%s' % (dataset_base, '{?subject,predicate,object}'))
         data_graph = self._tpf_uri('dataset')
         tp_node = BNode('triplePattern')

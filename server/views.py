@@ -16,7 +16,7 @@ def tpf_server(request):
                              request.GET.get('predicate'),
                              request.GET.get('object'))
     fragment = Fragment()
-    Odmtp(TrimmerXr2rml(), Tp2QueryTwitter(), MapperTwitterXr2rml()).match(tpq, fragment)
+    Odmtp(TrimmerXr2rml(), Tp2QueryTwitter(), MapperTwitterXr2rml()).match(tpq, fragment, request)
     response = HttpResponse(
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')
