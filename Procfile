@@ -1,1 +1,1 @@
-web: python manage.py runserver
+web: odmtp odmtp_tpf_server/wsgi.py --log-file -
