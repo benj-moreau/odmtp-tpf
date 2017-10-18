@@ -12,8 +12,8 @@ class Xr2rmlMapping(object):
         return self.logical_sources
 
     def print_mapping(self):
-        print self.logical_sources
+        print(self.logical_sources)
         for s, p, o in self.mapping:
-            print "s=%s" % s
-            print "p=%s" % p
-            print "o=%s" % o
+            print("s=%s" % s)
+            print("p=%s" % p)
+            print("o=%s" % o)
