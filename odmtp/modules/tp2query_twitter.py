@@ -19,7 +19,7 @@ TWITTER_OPERATORS = {
 
 BASE_QUERY = 'filter:safe'
 
-TWEETS_PER_PAGE = 20
+TWEETS_PER_PAGE = 5
 
 # TPF_URL = 'http://127.0.0.1:8000/'
 TPF_URL = 'https://odmtp.herokuapp.com/'
