@@ -6,7 +6,7 @@ ODMTP (On Demand Mapper with Triple pattern matching) enables triple pattern mat
 
 # Online demo
 
-Odmtp implemented for twitter is available on herokuapp. You can run SPARQL queries using the TPF client online version [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2F&query=PREFIX%20it%3A%20%3Chttp%3A%2F%2Fwww.influencetracker.com%2Fontology%23%3E%0A%0ASELECT%20%3Fs%20WHERE%20%7B%0A%20%7B%3Fs%20it%3AincludedHashtag%20%22ISWC2017%22.%7D%20UNION%20%7B%3Fs%20it%3AincludedHashtag%20%22iswc2017%22.%7D%0A%7D).
+ODMTP implemented for twitter is available on herokuapp. You can run SPARQL queries using the TPF client online version [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2F&query=PREFIX%20it%3A%20%3Chttp%3A%2F%2Fwww.influencetracker.com%2Fontology%23%3E%0A%0ASELECT%20%3Fs%20WHERE%20%7B%0A%20%7B%3Fs%20it%3AincludedHashtag%20%22ISWC2017%22.%7D%20UNION%20%7B%3Fs%20it%3AincludedHashtag%20%22iswc2017%22.%7D%0A%7D).
 
 # Instructions
 ## Prelude
