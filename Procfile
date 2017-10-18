@@ -1,1 +1,1 @@
-web: odmtp odmtp_tpf_server/wsgi.py --log-file -
+web: gunicorn --pythonpath django odmtp_tpf_server.wsgi --log-file -
