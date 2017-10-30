@@ -43,7 +43,7 @@ class TwitterApi(object):
             return response['resources'][resource_family][resource]
         return response
 
-    def _get_access_token(self):
+    def get_access_token(self):
         request = Request(REQUEST_TOKEN_URL)
         request.add_header('Content-Type',
                            'application/x-www-form-urlencoded;charset=UTF-8')
@@ -57,3 +57,6 @@ class TwitterApi(object):
         raw_data = response.read().decode('utf-8')
         data = json.loads(raw_data)
         return data['access_token']
+
+    def set_access_token(self, access_token):
+        self.access_token = access_token
