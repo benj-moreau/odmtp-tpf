@@ -39,7 +39,7 @@ class Tp2QueryTwitter(Tp2Query):
         twitter = TwitterApi()
         if 'access_token' not in request.COOKIES:
             request.COOKIES.set('access_token', twitter.get_access_token())
-        twitter.set_access_token(request.COOKIES.get('access_token'))
+        twitter.set_access_token(request.COOKIES['access_token'])
         for subject_prefix in reduced_mapping.logical_sources:
             if tpq.subject is None or tpq.subject.startswith(subject_prefix):
                 query_url = reduced_mapping.logical_sources[subject_prefix]['query']
