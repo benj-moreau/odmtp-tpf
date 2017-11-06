@@ -6,6 +6,7 @@ ODMTP (On Demand Mapper with Triple pattern matching) enables triple pattern mat
 # Online demo
 
 ODMTP's implemented for Twitter API & Github API are available on herokuapp. You can run SPARQL queries using the online TPF client demo: [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2Ftwitter%2F&query=PREFIX%20it%3A%20%3Chttp%3A%2F%2Fwww.influencetracker.com%2Fontology%23%3E%0A%0ASELECT%20%3Fs%20WHERE%20%7B%0A%20%7B%3Fs%20it%3AincludedHashtag%20%22ISWC2017%22.%7D%20UNION%20%7B%3Fs%20it%3AincludedHashtag%20%22iswc2017%22.%7D%0A%7D) for Twitter and [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2Fgithub%2F&query=PREFIX%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%0A%0ASELECT%20%3Frepo%0AWHERE%20%7B%0A%3Frepo%20schema%3Alanguage%20%22Java%22%0A%7D) for Github (limited to 60 request per hour).
+> HerokuApp go to sleep after 1 hour of inactivity. If a timeout occurs, re run your query.
 
 # Instructions
 ## Prelude
@@ -90,3 +91,8 @@ SELECT ?s ?p ?o WHERE {
  ?s ?p ?o
 }
 ```
+
+# Extras
+To understand how ODTMP approach is working, the ISWC 2017 poster is available [here](https://docs.google.com/presentation/d/e/2PACX-1vT7fstdxp9LrqPdYpVpbDopBjBLJB5oUysFDp8iS3Z33MCqk-6Yq-2OrWZuWT1tqyFWLeAYcv2kshXe/embed?).
+
+This is just a prototype, feel free to optimize it, improve mapping files, work on new api's etc.
