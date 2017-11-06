@@ -1,5 +1,6 @@
 from rdflib import URIRef, Literal, Namespace, BNode, RDF, XSD
 from urllib import urlencode
+from urlparse import urlparse
 
 from utils.github_api import GithubApi
 from odmtp.modules.tp2query import Tp2Query
@@ -21,14 +22,14 @@ GITHUB_QUALIFIERS = {
 }
 
 REPO_PER_PAGE = 5
-
-TPF_URL = 'http://127.0.0.1:8000/github/'
-# TPF_URL = 'https://odmtp.herokuapp.com/github/'
+TPF_URL = '%s://%s/github/'
 
 
 class Tp2QueryGithub(Tp2Query):
 
     def request(self, tpq, reduced_mapping, fragment, request):
+        tpf_url = urlparse(request.build_absolute_uri())
+        tpf_url = TPF_URL % (tpf_url.scheme, tpf_url.netloc)
         last_result = False
         result_set = None
         number_of_triples_per_repo = len(reduced_mapping.mapping)
@@ -64,16 +65,16 @@ class Tp2QueryGithub(Tp2Query):
             last_result = True
         total_nb_triples = total_count * number_of_triples_per_repo
         nb_triple_per_page = REPO_PER_PAGE * number_of_triples_per_repo
-        self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request)
+        self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request, tpf_url)
         return result_set
 
-    def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request):
-        meta_graph = self._tpf_uri('metadata')
+    def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request, tpf_url):
+        meta_graph = self._tpf_uri(tpf_url, 'metadata')
         fragment.add_graph(meta_graph)
-        dataset_base = self._tpf_uri()
+        dataset_base = self._tpf_uri(tpf_url)
         source = URIRef(request.build_absolute_uri())
         dataset_template = Literal('%s%s' % (dataset_base, '{?subject,predicate,object}'))
-        data_graph = self._tpf_uri('dataset')
+        data_graph = self._tpf_uri(tpf_url, 'dataset')
         tp_node = BNode('triplePattern')
         subject_node = BNode('subject')
         predicate_node = BNode('predicate')
@@ -84,7 +85,7 @@ class Tp2QueryGithub(Tp2Query):
         DCTERMS = Namespace("http://purl.org/dc/terms/")
 
         fragment.add_meta_quad(meta_graph, FOAF['primaryTopic'], dataset_base, meta_graph)
-        fragment.add_meta_quad(self._tpf_uri('dataset'), HYDRA['member'], data_graph, meta_graph)
+        fragment.add_meta_quad(data_graph, HYDRA['member'], data_graph, meta_graph)
         fragment.add_meta_quad(data_graph, RDF.type, VOID['Dataset'], meta_graph)
         fragment.add_meta_quad(data_graph, RDF.type, HYDRA['Collection'], meta_graph)
         fragment.add_meta_quad(data_graph, VOID['subset'], source, meta_graph)
@@ -115,16 +116,16 @@ class Tp2QueryGithub(Tp2Query):
             fragment.add_meta_quad(source, HYDRA['previous'], self._tpf_url(dataset_base, tpq.page - 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
         if not last_result:
             fragment.add_meta_quad(source, HYDRA['next'], self._tpf_url(dataset_base, tpq.page + 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
-        fragment.add_prefix('twittertpf', Namespace("%s#" % TPF_URL[:-1]))
+        fragment.add_prefix('twittertpf', Namespace("%s#" % tpf_url[:-1]))
         fragment.add_prefix('void', VOID)
         fragment.add_prefix('foaf', FOAF)
         fragment.add_prefix('hydra', HYDRA)
         fragment.add_prefix('purl', Namespace('http://purl.org/dc/terms/'))
 
-    def _tpf_uri(self, tag=None):
+    def _tpf_uri(self, tpf_url, tag=None):
         if tag is None:
-            return URIRef(TPF_URL)
-        return URIRef("%s%s" % (TPF_URL[:-1], '#%s' % tag))
+            return URIRef(tpf_url)
+        return URIRef("%s%s" % (tpf_url[:-1], '#%s' % tag))
 
     def _tpf_url(self, dataset_base, page, subject, predicate, obj):
         subject_parameter = subject if subject else ''
