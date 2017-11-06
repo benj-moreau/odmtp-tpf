@@ -21,8 +21,8 @@ BASE_QUERY = 'filter:safe'
 
 TWEETS_PER_PAGE = 5
 
-# TPF_URL = 'http://127.0.0.1:8000/'
-TPF_URL = 'https://odmtp.herokuapp.com/'
+TPF_URL = 'http://127.0.0.1:8000/twitter/'
+# TPF_URL = 'https://odmtp.herokuapp.com/twitter/'
 
 # twitter search API returns top 15000 tweets matching query
 # So i set up a limit to count maximum number of result (TWEETS_PER_PAGE * LAST_PAGE)

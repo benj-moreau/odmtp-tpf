@@ -3,7 +3,7 @@ from odmtp.modules.trimmer import Trimmer
 from rdflib import URIRef
 
 
-class TrimmerXr2rml(Trimmer):
+class TrimmerXr2rmlTwitter(Trimmer):
 
     def get_reduced_mapping(self, tpq):
         xr2rml_mapping = Xr2rmlMapper('./mapping/mapping_tweet.ttl').get_mapping()

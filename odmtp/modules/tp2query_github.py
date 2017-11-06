@@ -1,77 +1,69 @@
 from rdflib import URIRef, Literal, Namespace, BNode, RDF, XSD
 from urllib import urlencode
 
-from utils.twitter_api import TwitterApi
+from utils.github_api import GithubApi
 from odmtp.modules.tp2query import Tp2Query
 
 
-TWEET_SEARCH = "search/tweets.json"
-TWEET_LOOKUP = "statuses/show/%s.json"
+REPO_SEARCH = "search/repositories"
+REPOS = "repositories"
 
-# Associate key of the JSON result set with twitter query operators.
-# see https://dev.twitter.com/rest/public/search
-TWITTER_OPERATORS = {
-    '$.text': '"%s"',
-    '$.entities.hashtags.[*].text': '#%s',
-    '$.entities.urls.[*].expanded_url': 'url:%s',
-    '$.user.screen_name': 'from:%s'
+# Associate key of the JSON result set with github query qualifiers.
+# see https://help.github.com/articles/searching-repositories
+GITHUB_QUALIFIERS = {
+    '$.full_name': '%s in:full_name',
+    '$.description': '%s in:description',
+    '$.name': 'name:%s',
+    '$.owner.login': 'user:%s',
+    '$.created_at': 'created:%s',
+    '$.updated_at': 'pushed:%s',
+    '$.language': 'language:%s'
 }
 
-BASE_QUERY = 'filter:safe'
+REPO_PER_PAGE = 5
 
-TWEETS_PER_PAGE = 5
-
-# TPF_URL = 'http://127.0.0.1:8000/'
-TPF_URL = 'https://odmtp.herokuapp.com/'
-
-# twitter search API returns top 15000 tweets matching query
-# So i set up a limit to count maximum number of result (TWEETS_PER_PAGE * LAST_PAGE)
-LAST_PAGE = 5
+TPF_URL = 'http://127.0.0.1:8000/github/'
+# TPF_URL = 'https://odmtp.herokuapp.com/github/'
 
 
-class Tp2QueryTwitter(Tp2Query):
+class Tp2QueryGithub(Tp2Query):
 
     def request(self, tpq, reduced_mapping, fragment, request):
         last_result = False
         result_set = None
+        number_of_triples_per_repo = len(reduced_mapping.mapping)
+        query = ''
         query_parameters = {}
-        number_of_triples_per_tweets = len(reduced_mapping.mapping)
-        twitter = TwitterApi()
+        github = GithubApi()
         for subject_prefix in reduced_mapping.logical_sources:
             if tpq.subject is None or tpq.subject.startswith(subject_prefix):
                 query_url = reduced_mapping.logical_sources[subject_prefix]['query']
-        if tpq.subject:
-            tweet_id = tpq.subject.rpartition('/')[2]
-            query_url = "%s%s" % (query_url, TWEET_LOOKUP % tweet_id)
-            result_set = twitter.request(query_url)
-            result_set = [result_set]
-            last_result = True
-            total_nb_triples = len(result_set) * number_of_triples_per_tweets
+        if tpq.subject is None and tpq.obj is None:
+            query = "e"
         else:
-            q = BASE_QUERY
-            if tpq.obj:
-                if tpq.predicate:
-                    for s, p, o in reduced_mapping.mapping:
-                        if '%s' % o in TWITTER_OPERATORS:
-                            q = "%s %s" % (q, TWITTER_OPERATORS['%s' % o] % '%s' % tpq.obj)
-                else:
-                    q = "%s %s" % (q, '"%s"' % tpq.obj)
-            query_parameters['q'] = q
-            query_parameters['count'] = TWEETS_PER_PAGE
-            query_url = "%s%s" % (query_url, TWEET_SEARCH)
-            parameters = "?%s" % urlencode(query_parameters)
-            for i in range(tpq.page):
-                result_set = twitter.request("%s%s" % (query_url, parameters))
-                if 'next_results' in result_set['search_metadata']:
-                    parameters = result_set['search_metadata']['next_results']
-                else:
-                    last_result = True
-                    break
-            result_set = result_set['statuses']
-            if tpq.page >= LAST_PAGE:
+            if tpq.subject:
+                full_name = tpq.subject.rpartition('/')[2]
+                query = "%s %s" % (query, GITHUB_QUALIFIERS['$.full_name'] % full_name)
                 last_result = True
-            total_nb_triples = TWEETS_PER_PAGE * LAST_PAGE * number_of_triples_per_tweets
-        nb_triple_per_page = TWEETS_PER_PAGE * number_of_triples_per_tweets
+            if tpq.predicate:
+                if tpq.obj:
+                    for s, p, o in reduced_mapping.mapping:
+                        if '%s' % o in GITHUB_QUALIFIERS:
+                            query = "%s %s" % (query, GITHUB_QUALIFIERS['%s' % o] % '%s' % tpq.obj)
+                        else:
+                            query = "%s %s" % (query, '%s' % tpq.obj)
+        query_url = "%s%s" % (query_url, REPO_SEARCH)
+        query_parameters['q'] = query
+        query_parameters['page'] = tpq.page
+        query_parameters['per_page'] = REPO_PER_PAGE
+        parameters = "?%s" % urlencode(query_parameters)
+        result_set = github.request("%s%s" % (query_url, parameters))
+        total_count = result_set['total_count']
+        result_set = result_set['items']
+        if (tpq.page * REPO_PER_PAGE) >= total_count:
+            last_result = True
+        total_nb_triples = total_count * number_of_triples_per_repo
+        nb_triple_per_page = REPO_PER_PAGE * number_of_triples_per_repo
         self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request)
         return result_set
 
@@ -112,8 +104,8 @@ class Tp2QueryTwitter(Tp2Query):
 
         fragment.add_meta_quad(dataset_base, VOID['subset'], source, meta_graph)
         fragment.add_meta_quad(source, RDF.type, HYDRA['PartialCollectionView'], meta_graph)
-        fragment.add_meta_quad(source, DCTERMS['title'], Literal("TPF Twitter search API 1.1"), meta_graph)
-        fragment.add_meta_quad(source, DCTERMS['description'], Literal("Triple Pattern from the twitter api matching the pattern {?s=%s, ?p=%s, ?o=%s}" % (tpq.subject, tpq.predicate, tpq.obj)), meta_graph)
+        fragment.add_meta_quad(source, DCTERMS['title'], Literal("TPF Github search API v3"), meta_graph)
+        fragment.add_meta_quad(source, DCTERMS['description'], Literal("Triple Pattern from the github repo api v3 matching the pattern {?s=%s, ?p=%s, ?o=%s}" % (tpq.subject, tpq.predicate, tpq.obj)), meta_graph)
         fragment.add_meta_quad(source, DCTERMS['source'], data_graph, meta_graph)
         fragment.add_meta_quad(source, HYDRA['totalItems'], Literal(total_nb_triples, datatype=XSD.int), meta_graph)
         fragment.add_meta_quad(source, VOID['triples'], Literal(total_nb_triples, datatype=XSD.int), meta_graph)
