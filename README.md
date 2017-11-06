@@ -1,12 +1,11 @@
 # ODMTP TPF Server
-
 odmtp-tpf is a Triple Pattern Fragment server using Python, Django and ODMTP.
 
 ODMTP (On Demand Mapper with Triple pattern matching) enables triple pattern matching over non-RDF datasources.
 
 # Online demo
 
-ODMTP implemented for twitter is available on herokuapp. You can run SPARQL queries using the TPF client online version [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2F&query=PREFIX%20it%3A%20%3Chttp%3A%2F%2Fwww.influencetracker.com%2Fontology%23%3E%0A%0ASELECT%20%3Fs%20WHERE%20%7B%0A%20%7B%3Fs%20it%3AincludedHashtag%20%22ISWC2017%22.%7D%20UNION%20%7B%3Fs%20it%3AincludedHashtag%20%22iswc2017%22.%7D%0A%7D).
+ODMTP's implemented for Twitter API & Github API are available on herokuapp. You can run SPARQL queries using the online TPF client demo: [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2Ftwitter%2F&query=PREFIX%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%0A%0ASELECT%20%3Fs%20WHERE%20%7B%0A%20%3Fs%20schema%3Aauthor%20%22NantesTech%22.%0A%7D) for Twitter and [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2Fgithub%2F&query=PREFIX%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%0A%0ASELECT%20%3Frepo%0AWHERE%20%7B%0A%3Frepo%20schema%3Alanguage%20%22Java%22%0A%7D) for Github (limited to 60 request per hour).
 
 # Instructions
 ## Prelude
@@ -38,11 +37,11 @@ python manage.py runserver
 
 The TPF server should run at: http://127.0.0.1:8000/
 
-#### Exemple
+# Examples of Simple Queries
 You can use any Triple Pattern Fragment client: http://linkeddatafragments.org/software/
-to run SPARQL queries over twitter (https://dev.twitter.com/rest/public/search)
-
-For exemple you can run this SPARQL query over http://127.0.0.1:8000/ to retrieve tweets using #iswc2017 hashtag.
+to run SPARQL queries over twitter API and github Repo API V3
+## SPARQL queries over Twitter API
+You can run this SPARQL query over http://127.0.0.1:8000/twitter/ to retrieve tweets using #iswc2017 hashtag.
 ```sparql
 PREFIX it: <http://www.influencetracker.com/ontology#>
 
@@ -74,4 +73,20 @@ SELECT ?p ?o WHERE {
 }
 ```
 
+## SPARQL queries over Github API
+You can run this SPARQL query over http://127.0.0.1:8000/github/ to retrieve repositories using Java programming language.
+```sparql
+PREFIX schema: <http://schema.org/>
 
+SELECT ?repo
+WHERE {
+?repo schema:language "Java"
+}
+```
+
+SPO query to browse repositories
+```sparql
+SELECT ?s ?p ?o WHERE {
+ ?s ?p ?o
+}
+```
