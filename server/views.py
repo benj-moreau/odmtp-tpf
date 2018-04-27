@@ -43,3 +43,30 @@ def github_tpf_server(request):
     response['Content-Disposition'] = 'attachment; filename="fragment.trig"'
     response['Access-Control-Allow-Origin'] = '*'
     return response
+
+
+@require_http_methods(['GET'])
+def linkedin_tpf_server(request):
+    tpq = TriplePatternQuery(request.GET.get('page', '1'),
+                             request.GET.get('subject'),
+                             request.GET.get('predicate'),
+                             request.GET.get('object'))
+    fragment = Fragment()
+    Odmtp(TrimmerXr2rmlTwitter(), Tp2QueryTwitter(), MapperTwitterXr2rml()).match(tpq, fragment, request)
+    response = HttpResponse(
+        fragment.serialize(),
+        content_type='application/trig; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="fragment.trig"'
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+@require_http_methods(['GET'])
+def linkedin_authentication_tpf_server(request):
+    fragment = Fragment()
+    response = HttpResponse(
+        fragment.serialize(),
+        content_type='application/trig; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="linkedin_auth.trig"'
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
