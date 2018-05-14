@@ -1,0 +1,87 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix xrr: <http://www.i3s.unice.fr/ns/xr2rml#> .
+@prefix schema: <http://schema.org/> .
+@prefix it: <http://www.influencetracker.com/ontology#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+
+<#Profile>
+  xrr:logicalSource [
+    xrr:query "https://api.linkedin.com/v1/people/";
+    rml:iterator "$.statuses.*";
+  ];
+  # token à la place de id ?
+  rr:subjectMap [
+    rr:template "https://linkedin.com/Profile/{$.id}";
+    rr:class schema:Person;
+  ];
+  rr:predicateObjectMap [
+    rr:predicate schema:givenName;
+    rr:objectMap [ xrr:reference "$.first-name"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate schema:familyName;
+    rr:objectMap [ xrr:reference "$.last-name"; ];
+  ];
+
+  [ rr:objectMap [ rr:parentTriplesMap <#Localisation> ] ;
+      rr:predicate <http://dbpedia.org/ontology/city> ],
+
+  [ rr:objectMap [ rr:parentTriplesMap <#positions> ] ;
+          rr:predicate <http://schema.org/> ],
+
+  rr:predicateObjectMap [
+    rr:predicate schema:dateCreated;
+    rr:objectMap [ xrr:reference "$.id"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate shema:relatedLink;
+    rr:objectMap [ xrr:reference "$.publicProfileUrl"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate shema:relatedLink;
+    rr:objectMap [ xrr:reference "$.siteStandardProfileRequest"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:number;
+    rr:objectMap [ xrr:reference "$.numConnections"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate schema:URL;
+    rr:objectMap [ xrr:reference "$.pictureUrl"; ];
+  ].
+
+<#Location>
+  xrr:query "https://api.linkedin.com/v1/people/";
+    rml:iterator "$.statuses.*";
+  ];
+  # City estceque elle doit tout regrouper ?
+  rr:subjectMap [
+    rr:template "https://linkedin.com/Location/{$.n}";
+    rr:class dbpedia:Place;
+  ];
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:place;
+    rr:objectMap [ xrr:reference "$.name"; ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:Abreviation;
+    rr:objectMap [ xrr:reference "$.code"; ];
+  ].
+
+  <#positions>
+    xrr:query "https://api.linkedin.com/v1/people/";
+      rml:iterator "$.values.*";
+    ];
+    # City estceque elle doit tout regrouper ?
+    rr:subjectMap [
+      rr:template "https://linkedin.com/Localisation/{$.n}";
+      rr:class shema:Person;
+    ];
+    rr:predicateObjectMap [
+      rr:predicate shema:;
+      rr:objectMap [ xrr:reference "$.name"; ];
+    ].
+# ajouter le country fr shema alternateName?
+# position jobTitle
