@@ -6,82 +6,200 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix dbpedia: <http://dbpedia.org/ontology/> .
 
-<#Profile>
-  xrr:logicalSource [
-    xrr:query "https://api.linkedin.com/v1/people/";
-    rml:iterator "$.statuses.*";
-  ];
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+
+# bin/RML-Mapper -m mapping_linkedin.rml.ttl -o mapping_linkedin-result.ttl
+
+
+<#Profile>  rml:logicalSource [ rml:iterator "$.[*]" ;
+            xrr:query "https://api.linkedin.com/v1/people/"
+             ] ;
+  #  xrr:logicalSource [
+  #  xrr:query "https://api.linkedin.com/v1/people/";
+  #  rml:iterator "$.values.*";
+  #];
   # token à la place de id ?
   rr:subjectMap [
-    rr:template "https://linkedin.com/Profile/{$.id}";
-    rr:class schema:Person;
-  ];
-  rr:predicateObjectMap [
-    rr:predicate schema:givenName;
-    rr:objectMap [ xrr:reference "$.first-name"; ];
-  ];
-  rr:predicateObjectMap [
-    rr:predicate schema:familyName;
-    rr:objectMap [ xrr:reference "$.last-name"; ];
+    rml:reference "$.publicProfileUrl";
+    rr:class schema:Person ;
   ];
 
-  [ rr:objectMap [ rr:parentTriplesMap <#Localisation> ] ;
-      rr:predicate <http://dbpedia.org/ontology/city> ],
+  rr:predicateObjectMap [
+    rr:predicate schema:givenName ;
+    rr:objectMap [ xrr:reference "$.firstName" ];
+  ],
 
-  [ rr:objectMap [ rr:parentTriplesMap <#positions> ] ;
-          rr:predicate <http://schema.org/> ],
+    [ rr:predicate schema:familyName ;
+      rr:objectMap [ xrr:reference "$.lastName" ];
+  ],
 
-  rr:predicateObjectMap [
-    rr:predicate schema:dateCreated;
-    rr:objectMap [ xrr:reference "$.id"; ];
-  ];
-  rr:predicateObjectMap [
-    rr:predicate shema:relatedLink;
-    rr:objectMap [ xrr:reference "$.publicProfileUrl"; ];
-  ];
-  rr:predicateObjectMap [
-    rr:predicate shema:relatedLink;
-    rr:objectMap [ xrr:reference "$.siteStandardProfileRequest"; ];
-  ];
-  rr:predicateObjectMap [
-    rr:predicate dbpedia:number;
-    rr:objectMap [ xrr:reference "$.numConnections"; ];
-  ];
-  rr:predicateObjectMap [
-    rr:predicate schema:URL;
-    rr:objectMap [ xrr:reference "$.pictureUrl"; ];
+    [rr:objectMap [ rr:parentTriplesMap <#LocationActuelle> ] ;
+    rr:predicate <http://dbpedia.org/ontology/city>
+  ],
+
+   [rr:objectMap [ rr:parentTriplesMap <#Positions> ] ;
+   rr:predicate <http://dbpedia.org/ontology/person>
+  ],
+
+
+    [rr:predicate schema:relatedLink ;
+    rr:objectMap [ xrr:reference "$.publicProfileUrl" ];
+  ],
+
+   [rr:predicate schema:relatedLink ;
+    rr:objectMap [ xrr:reference "$.siteStandardProfileRequest" ];
+  ],
+
+    [rr:predicate dbpedia:number ;
+    rr:objectMap [ xrr:reference "$.numConnections" ];
+  ],
+
+    [rr:predicate schema:URL ;
+    rr:objectMap [ xrr:reference "$.pictureUrl" ];
   ].
 
-<#Location>
-  xrr:query "https://api.linkedin.com/v1/people/";
-    rml:iterator "$.statuses.*";
-  ];
-  # City estceque elle doit tout regrouper ?
+<#LocationActuelle> rml:logicalSource [ rml:iterator "$.[*]" ;
+             xrr:query "https://api.linkedin.com/v1/people/"] ;
+
   rr:subjectMap [
-    rr:template "https://linkedin.com/Location/{$.n}";
-    rr:class dbpedia:Place;
+    rr:template "https://linkedin.com/LocationActuelle/{$.location.name}";
+    rr:class dbpedia:City ;
   ];
-  rr:predicateObjectMap [
-    rr:predicate dbpedia:place;
-    rr:objectMap [ xrr:reference "$.name"; ];
+
+    rr:predicateObjectMap [
+      rr:objectMap [ rr:parentTriplesMap <#Country> ] ;
+      rr:predicate <http://dbpedia.org/ontology/country>
   ];
+
   rr:predicateObjectMap [
-    rr:predicate dbpedia:Abreviation;
-    rr:objectMap [ xrr:reference "$.code"; ];
+    rr:predicate dbpedia:place ;
+    rr:objectMap [ xrr:reference "$.location.name" ];
   ].
 
-  <#positions>
-    xrr:query "https://api.linkedin.com/v1/people/";
-      rml:iterator "$.values.*";
-    ];
-    # City estceque elle doit tout regrouper ?
+<#Country>  rml:logicalSource [ rml:iterator "$.[*]" ;
+            xrr:query "https://api.linkedin.com/v1/people/"
+             ] ;
+  #xrr:query "https://api.linkedin.com/v1/people/";
+      # rml:iterator "$.values.*";
+    #];
     rr:subjectMap [
-      rr:template "https://linkedin.com/Localisation/{$.n}";
-      rr:class shema:Person;
+    rr:template "https://linkedin.com/Country/{$.location.country.code}";
+    rr:class dbpedia:Country ;
+  ];
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:Abreviation ;
+    rr:objectMap [ xrr:reference "$.location.country.code" ];
+  ].
+
+  <#Positions> rml:logicalSource [ rml:iterator "$.[*].positions.values.[*]" ;
+               xrr:query "https://api.linkedin.com/v1/people/"
+             ] ;
+
+    rr:subjectMap [
+      rr:template "https://linkedin.com/Positions/{$.id}";
+      rr:class dbpedia:Person ;
+    ];
+
+   # TROUVER LE BON TEMPLATE
+   # rr:predicateObjectMap [
+   #   rr:predicate dbpedia:number ;
+   #   rr:objectMap [ xrr:reference "$._total" ];
+   #  ];
+
+ rr:predicateObjectMap [
+    rr:objectMap [ rr:parentTriplesMap <#Company> ] ;
+     rr:predicate <http://dbpedia.org/ontology/affiliation>
+  ];
+
+  rr:predicateObjectMap [
+     rr:objectMap [ rr:parentTriplesMap <#LocationCompany> ] ;
+     rr:predicate <http://dbpedia.org/ontology/address>
+  ];
+
+    rr:predicateObjectMap [
+      rr:predicate schema:identifier ;
+        rr:objectMap [ xrr:reference "$.id" ];
+    ];
+
+    rr:predicateObjectMap [
+      rr:predicate schema:jobTitle ;
+        rr:objectMap [ xrr:reference "$.title" ];
+    ];
+
+
+  rr:predicateObjectMap [
+     rr:objectMap [ rr:parentTriplesMap <#DebutWork> ] ;
+     rr:predicate <http://dbpedia.org/ontology/debutWork>
+  ].
+
+   # rr:predicateObjectMap [
+   #   rr:predicate schema:Schedule ;
+   #   rr:objectMap [ xrr:reference "$.startDate" ];
+   # ].
+
+
+<#Company>  rml:logicalSource [ rml:iterator "$.[*].positions.values.[*].company" ;
+            xrr:query "https://api.linkedin.com/v1/people/"
+            ] ;
+
+  rr:subjectMap [
+    rr:template "https://linkedin.com/Company/{$.id}";
+    rr:class dbpedia:Company ;
+  ];
+  rr:predicateObjectMap [
+    rr:predicate schema:identifier ;
+      rr:objectMap [ xrr:reference "$.id" ];
+  ];
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:industry ;
+      rr:objectMap [ xrr:reference "$.industry" ];
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate schema:description ;
+      rr:objectMap [ xrr:reference "$.type" ];
+  ];
+
+  # rr:predicateObjectMap [
+  #   rr:predicate dbpedia:Ticker_symbol;
+  #     rr:objectMap [ xrr:reference "$.positions.company.ticker" ];
+  # ];
+
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:numberOfEmployees ;
+      rr:objectMap [ xrr:reference "$.size" ];
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:companyName ;
+    rr:objectMap [ xrr:reference "$.name" ];
+  ].
+
+<#LocationCompany>  rml:logicalSource [ rml:iterator "$.[*].positions.values.[*].location" ;
+                xrr:query "https://api.linkedin.com/v1/people/" ] ;
+
+    rr:subjectMap [
+      rr:template "https://linkedin.com/LocationCompany/{$.name}";
+      rr:class dbpedia:Place ;
     ];
     rr:predicateObjectMap [
-      rr:predicate shema:;
-      rr:objectMap [ xrr:reference "$.name"; ];
+      rr:predicate dbpedia:address ;
+        rr:objectMap [ xrr:reference "$.name" ];
     ].
-# ajouter le country fr shema alternateName?
-# position jobTitle
+
+<#DebutWork>  rml:logicalSource [ rml:iterator "$.[*].positions.values.[*].startDate" ;
+            xrr:query "https://api.linkedin.com/v1/people/" ] ;
+
+  rr:subjectMap [
+    rr:template "https://linkedin.com/DebutWork/{$.month}_{$.year}";
+    rr:class dbpedia:Work ;
+  ];
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:month ;
+      rr:objectMap [ xrr:reference "$.month" ];
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate dbpedia:year ;
+    rr:objectMap [ xrr:reference "$.year" ];
+  ].

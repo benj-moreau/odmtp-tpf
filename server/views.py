@@ -77,7 +77,7 @@ def linkedin_tpf_server(request):
 
 @require_http_methods(['GET'])
 def linkedin_authentication_tpf_server(request):
-    authentication = linkedin.LinkedInAuthentication(settings.CLIENT_ID_LINKEDIN, settings.CLIENT_SECRET_LINKEDIN, "http://127.0.0.1:8000/linkedin/authentication/", ['r_emailaddress', 'r_basicprofile', 'w_share', 'rw_company_admin'])
+    authentication = linkedin.LinkedInAuthentication(settings.CLIENT_ID_LINKEDIN, settings.CLIENT_SECRET_LINKEDIN, "http://127.0.0.1:8000/linkedin/authentification/", ['r_emailaddress', 'r_basicprofile', 'w_share', 'rw_company_admin'])
     authorization_code = request.GET.get('code', None)
     if authorization_code:
         authentication.authorization_code = authorization_code
@@ -95,7 +95,7 @@ def linkedin_authentication_tpf_server(request):
         f.write(json.dumps(users, indent=4))
         f.close()
         json_data.close()
-        response = HttpResponse(linkedin_token)
+        response = HttpResponse(linkedin_token[0])
         response['Access-Control-Allow-Origin'] = '*'
     else:
         # si l'appel de test_ip_token renvoie existant on ne fait rien sinon on appel les lignes suivantes
@@ -103,7 +103,14 @@ def linkedin_authentication_tpf_server(request):
             application = linkedin.LinkedInApplication(authentication)
             response = redirect(authentication.authorization_url)
         else:
-            response = HttpResponse("le token et l'ip existent deja et le token est valable")
+            # le token existe et est utilisable
+            # il faut renvoyer le token trouve
+            # lire dans le fichier le token en fonction de l'IP
+            ip = get_client_ip(request)
+            json_data = open('/home/amri-c/Documents/odmtp-tpf/utils/users.json', 'r')
+            users = json.load(json_data)
+            response = HttpResponse(users[ip]['token'])
+            json_data.close()
 
     return response
 
@@ -144,9 +151,9 @@ def get_client_ip(request):
 #             f.write(json.dumps(users, indent=4))
 #             f.close()
 #             json_data.close()
-#             response = redirect('linkedin/authentication/')
+#             response = redirect('linkedin/authentification/')
 #     else:
-#         response = redirect('linkedin/authentication/')
+#         response = redirect('linkedin/authentification/')
 #     # appeller directement la vue qui fera la requette en passant en parametre le token
 #     # response = HttpResponse("hi")
 #     return response
