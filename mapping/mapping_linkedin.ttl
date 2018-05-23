@@ -5,22 +5,17 @@
 @prefix it: <http://www.influencetracker.com/ontology#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix dbpedia: <http://dbpedia.org/ontology/> .
-
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 
-# bin/RML-Mapper -m mapping_linkedin.rml.ttl -o mapping_linkedin-result.ttl
 
 
 <#Profile>  rml:logicalSource [ rml:iterator "$.[*]" ;
             xrr:query "https://api.linkedin.com/v1/people/"
              ] ;
-  #  xrr:logicalSource [
-  #  xrr:query "https://api.linkedin.com/v1/people/";
-  #  rml:iterator "$.values.*";
-  #];
-  # token à la place de id ?
+
   rr:subjectMap [
     rml:reference "$.publicProfileUrl";
+    rr:template "https://www.linkedin.com/search/results/index/?keywords={$.firstName}";
     rr:class schema:Person ;
   ];
 
@@ -79,9 +74,7 @@
 <#Country>  rml:logicalSource [ rml:iterator "$.[*]" ;
             xrr:query "https://api.linkedin.com/v1/people/"
              ] ;
-  #xrr:query "https://api.linkedin.com/v1/people/";
-      # rml:iterator "$.values.*";
-    #];
+
     rr:subjectMap [
     rr:template "https://linkedin.com/Country/{$.location.country.code}";
     rr:class dbpedia:Country ;
@@ -99,12 +92,6 @@
       rr:template "https://linkedin.com/Positions/{$.id}";
       rr:class dbpedia:Person ;
     ];
-
-   # TROUVER LE BON TEMPLATE
-   # rr:predicateObjectMap [
-   #   rr:predicate dbpedia:number ;
-   #   rr:objectMap [ xrr:reference "$._total" ];
-   #  ];
 
  rr:predicateObjectMap [
     rr:objectMap [ rr:parentTriplesMap <#Company> ] ;
@@ -126,17 +113,15 @@
         rr:objectMap [ xrr:reference "$.title" ];
     ];
 
+    rr:predicateObjectMap [
+      rr:predicate dbpedia:month ;
+        rr:objectMap [ xrr:reference "$.month" ];
+    ];
 
-  rr:predicateObjectMap [
-     rr:objectMap [ rr:parentTriplesMap <#DebutWork> ] ;
-     rr:predicate <http://dbpedia.org/ontology/debutWork>
-  ].
-
-   # rr:predicateObjectMap [
-   #   rr:predicate schema:Schedule ;
-   #   rr:objectMap [ xrr:reference "$.startDate" ];
-   # ].
-
+    rr:predicateObjectMap [
+      rr:predicate dbpedia:year ;
+      rr:objectMap [ xrr:reference "$.year" ];
+    ].
 
 <#Company>  rml:logicalSource [ rml:iterator "$.[*].positions.values.[*].company" ;
             xrr:query "https://api.linkedin.com/v1/people/"
@@ -160,11 +145,6 @@
       rr:objectMap [ xrr:reference "$.type" ];
   ];
 
-  # rr:predicateObjectMap [
-  #   rr:predicate dbpedia:Ticker_symbol;
-  #     rr:objectMap [ xrr:reference "$.positions.company.ticker" ];
-  # ];
-
   rr:predicateObjectMap [
     rr:predicate dbpedia:numberOfEmployees ;
       rr:objectMap [ xrr:reference "$.size" ];
@@ -179,27 +159,10 @@
                 xrr:query "https://api.linkedin.com/v1/people/" ] ;
 
     rr:subjectMap [
-      rr:template "https://linkedin.com/LocationCompany/{$.name}";
+      rr:template "https://linkedin.com/LocationCompany/{$.location.name}";
       rr:class dbpedia:Place ;
     ];
     rr:predicateObjectMap [
       rr:predicate dbpedia:address ;
         rr:objectMap [ xrr:reference "$.name" ];
     ].
-
-<#DebutWork>  rml:logicalSource [ rml:iterator "$.[*].positions.values.[*].startDate" ;
-            xrr:query "https://api.linkedin.com/v1/people/" ] ;
-
-  rr:subjectMap [
-    rr:template "https://linkedin.com/DebutWork/{$.month}_{$.year}";
-    rr:class dbpedia:Work ;
-  ];
-  rr:predicateObjectMap [
-    rr:predicate dbpedia:month ;
-      rr:objectMap [ xrr:reference "$.month" ];
-  ];
-
-  rr:predicateObjectMap [
-    rr:predicate dbpedia:year ;
-    rr:objectMap [ xrr:reference "$.year" ];
-  ].

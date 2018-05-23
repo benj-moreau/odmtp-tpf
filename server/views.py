@@ -1,13 +1,20 @@
 from odmtp.odmtp import Odmtp
 from odmtp.modules.trimmer_xr2rml_twitter import TrimmerXr2rmlTwitter
 from odmtp.modules.trimmer_xr2rml_github import TrimmerXr2rmlGithub
+from odmtp.modules.trimmer_xr2rml_linkedin import TrimmerXr2rmllinkedin
+
 from odmtp.modules.tp2query_twitter import Tp2QueryTwitter
 from odmtp.modules.tp2query_github import Tp2QueryGithub
+from odmtp.modules.tp2query_linkedin import Tp2QueryLinkedin
+
 from odmtp.modules.mapper_twitter_xr2rml import MapperTwitterXr2rml
 from odmtp.modules.mapper_github_xr2rml import MapperGithubXr2rml
+from odmtp.modules.mapper_linkedin_xr2rml import MapperlinkedinXr2rml
 
 from tpf.tpq import TriplePatternQuery
 from tpf.fragment import Fragment
+
+from utils.management_token import get_client_ip, linkedin_verification_ip_token_date
 
 from django.http.response import HttpResponse
 from django.views.decorators.http import require_http_methods
@@ -66,7 +73,7 @@ def linkedin_tpf_server(request):
                              request.GET.get('predicate'),
                              request.GET.get('object'))
     fragment = Fragment()
-    Odmtp(TrimmerXr2rmlTwitter(), Tp2QueryTwitter(), MapperTwitterXr2rml()).match(tpq, fragment, request)
+    Odmtp(TrimmerXr2rmllinkedin(), Tp2QueryLinkedin(), MapperlinkedinXr2rml()).match(tpq, fragment, request)
     response = HttpResponse(
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')
@@ -98,26 +105,16 @@ def linkedin_authentication_tpf_server(request):
         response = HttpResponse(linkedin_token[0])
         response['Access-Control-Allow-Origin'] = '*'
     else:
-        # si l'appel de test_ip_token renvoie existant on ne fait rien sinon on appel les lignes suivantes
-        if linkedin_verification_ip_token_date(request) is False:
-            application = linkedin.LinkedInApplication(authentication)
+        if not linkedin_verification_ip_token_date(request):
+            linkedin.LinkedInApplication(authentication)
             response = redirect(authentication.authorization_url)
         else:
-            # le token existe et est utilisable
-            # il faut renvoyer le token trouve
-            # lire dans le fichier le token en fonction de l'IP
             ip = get_client_ip(request)
             json_data = open('/home/amri-c/Documents/odmtp-tpf/utils/users.json', 'r')
             users = json.load(json_data)
             response = HttpResponse(users[ip]['token'])
             json_data.close()
-
     return response
-
-
-def get_client_ip(request):
-    client_ip, is_routable = ipware.get_client_ip(request)
-    return client_ip
 
 
 # @require_http_methods(['GET'])
@@ -157,38 +154,3 @@ def get_client_ip(request):
 #     # appeller directement la vue qui fera la requette en passant en parametre le token
 #     # response = HttpResponse("hi")
 #     return response
-
-
-def linkedin_verification_ip_token_date(request):
-    ip = get_client_ip(request)
-    my_file = os.path.isfile('/home/amri-c/Documents/odmtp-tpf/utils/users.json')
-    if my_file is True:
-        json_data = open('/home/amri-c/Documents/odmtp-tpf/utils/users.json', 'r')
-    else:
-        json_data = open('/home/amri-c/Documents/odmtp-tpf/utils/users.json', 'w')
-        json_data.write("{}")
-        json_data.close()
-        json_data = open('/home/amri-c/Documents/odmtp-tpf/utils/users.json', 'r')
-
-    users = json.load(json_data)
-    if ip in users:
-        # sauvgarder le token et date correspondant a IP
-        user = users[ip]
-        today = datetime.datetime.now()
-        # si une erreurs survient au niveau de la cle mettre des crochet autour du 1
-        date_use = datetime.datetime.strptime(user['Date'], "%Y-%m-%d %H:%M:%S.%f")
-        tmp = date_use+datetime.timedelta(days=60)
-        if tmp > today:
-            print "le token est toujours valable"
-            response = True
-        else:
-            del users[ip]
-            f = open("/home/amri-c/Documents/odmtp-tpf/utils/users.json", "w")
-            f.write(json.dumps(users, indent=4))
-            f.close()
-            json_data.close()
-            response = False
-    else:
-        response = False
-
-        return response
