@@ -15,7 +15,7 @@ class Trimmer(object):
                 if not tpq.subject.startswith(subject_prefix):
                     xr2rml_mapping.mapping.remove((s, p, o))
         if tpq.obj is not None and type(tpq.obj) is URIRef:
-            object_prefix = s.split('{')[0]
+            object_prefix = tpq.obj.split('{')[0]
             for s, p, o in xr2rml_mapping.mapping:
                 if not tpq.obj.startswith(object_prefix):
                     xr2rml_mapping.mapping.remove((s, p, o))

@@ -19,6 +19,6 @@ class MapperlinkedinXr2rml(Mapper):
                 object_jsonpath = parse(obj.split('{')[0].split('}')[0])
                 object_values = [match.value for match in object_jsonpath.find(result_set)]
                 for object_value in object_values:
-                    fragment.add_data_triple(URIRef("%s%s" % (subject_prefix, quote(subject_values[0]))), p, Literal(object_value))
+                    fragment.add_data_triple(URIRef("%s%s" % (subject_prefix, quote(subject_values[0].encode('utf8')))), p, Literal(object_value))
             else:
-                fragment.add_data_triple(URIRef("%s%s" % (subject_prefix,  quote(subject_values[0]))), p, obj)
+                fragment.add_data_triple(URIRef("%s%s" % (subject_prefix,  quote(subject_values[0].encode('utf8')))), p, obj)

@@ -101,6 +101,12 @@ class Tp2QueryLinkedin(Tp2Query):
     def _tpf_url(self, dataset_base, page, subject, predicate, obj):
         subject_parameter = subject if subject else ''
         predicate_parameter = predicate if predicate else ''
-        object_parameter = ('"%s"^^%s' % (obj, obj._datatype)) if obj else ''
+        if obj:
+            if isinstance(obj, URIRef):
+                object_parameter = obj
+            else:
+                object_parameter = ('"%s"^^%s' % (obj, obj._datatype))
+        else:
+            object_parameter = ''
         parameters = {'page': page, 'subject': subject_parameter, 'predicate': predicate_parameter, 'object': object_parameter}
         return URIRef("%s?%s" % (dataset_base, urlencode(parameters)))
