@@ -15,8 +15,6 @@ BASE_QUERY = 'filter:safe'
 
 TPF_URL = '%s://%s/linkedin/'
 
-# twitter search API returns top 15000 tweets matching query
-# So i set up a limit to count maximum number of result (TWEETS_PER_PAGE * LAST_PAGE)
 LAST_PAGE = 1
 
 
@@ -42,40 +40,26 @@ class Tp2QueryLinkedin(Tp2Query):
         return result_set
 
     def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request, tpf_url):
-        # meta_graph = uri de refrence metadata#
         meta_graph = self._tpf_uri(tpf_url, 'metadata')
-        # j insere les metadonnees en tant que graphe(triplet) dans mon fragment
         fragment.add_graph(meta_graph)
-        # meme chose que la premire ligne
         dataset_base = self._tpf_uri(tpf_url)
-        # creer une uri avec ce qui est passse en parametre elle de quel forme la request c est untripple pattern fragment
         source = URIRef(request.build_absolute_uri())
-        # ecrit en chaine de caractere avec le dataset_base donc l uri suivie du spo
         dataset_template = Literal('%s%s' % (dataset_base, '{?subject,predicate,object}'))
-        # uri avec data_set a la suite
         data_graph = self._tpf_uri(tpf_url, 'dataset')
-        # noms donne a soit un sujet ou un objet
         tp_node = BNode('triplePattern')
         subject_node = BNode('subject')
         predicate_node = BNode('predicate')
         object_node = BNode('object')
-        # je dois ajouter quoi comme liens ?
-        # uri dbpedia ?
-        # DBPEDIA = Namespace("http://dbpedia.org/ontology#")
-        # SHEMA = Namespace("http://schema.org")
-        # juste pour la deco
+
         HYDRA = Namespace("http://www.w3.org/ns/hydra/core#")
         VOID = Namespace("http://rdfs.org/ns/void#")
         FOAF = Namespace("http://xmlns.com/foaf/0.1/")
         DCTERMS = Namespace("http://purl.org/dc/terms/")
 
         fragment.add_meta_quad(meta_graph, FOAF['primaryTopic'], dataset_base, meta_graph)
-        # fragment.add_meta_quad(data_graph, HYDRA[member], data_graph, meta_graph)
         fragment.add_meta_quad(data_graph, RDF.type, VOID['Dataset'], meta_graph)
         fragment.add_meta_quad(data_graph, RDF.type, HYDRA['Collection'], meta_graph)
         fragment.add_meta_quad(data_graph, VOID['subset'], source, meta_graph)
-        # # je n ai pas besoin d'un endpoint pour linked in
-        # fragment.add_meta_quad(data_graph, VOID[uriLookupEndpoint], dataset_template, meta_graph)
         fragment.add_meta_quad(data_graph, HYDRA['search'], tp_node, meta_graph)
         fragment.add_meta_quad(tp_node, HYDRA['template'], dataset_template, meta_graph)
         fragment.add_meta_quad(tp_node, HYDRA['variableRepresentation'], HYDRA['ExplicitRepresentation'], meta_graph)
@@ -95,7 +79,6 @@ class Tp2QueryLinkedin(Tp2Query):
         fragment.add_meta_quad(source, DCTERMS['description'], Literal("Triple Pattern from the linkedin api matching the pattern {?s=%s, ?p=%s, ?o=%s}" % (tpq.subject, tpq.predicate, tpq.obj)), meta_graph)
         fragment.add_meta_quad(source, DCTERMS['source'], data_graph, meta_graph)
 
-        # ceux dont il ma parle mais a quel moment il entre les valeurs ?
         fragment.add_meta_quad(source, HYDRA['totalItems'], Literal(total_nb_triples, datatype=XSD.int), meta_graph)
         fragment.add_meta_quad(source, VOID['triples'], Literal(total_nb_triples, datatype=XSD.int), meta_graph)
         fragment.add_meta_quad(source, HYDRA['itemsPerPage'], Literal(nb_triple_per_page, datatype=XSD.int), meta_graph)
@@ -103,18 +86,12 @@ class Tp2QueryLinkedin(Tp2Query):
         if tpq.page > 1:
             fragment.add_meta_quad(source, HYDRA['previous'], self._tpf_url(dataset_base, 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
         if not last_result:
-            # c est toujour le dernier resultat estceque je le laisse ou je l'enleee
-            # si ce n'est pas la derniere je renvoie vers la premiere car y en a qu une
             fragment.add_meta_quad(source, HYDRA['next'], self._tpf_url(dataset_base, 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
         fragment.add_prefix('linkedintpf', Namespace("%s#" % tpf_url[:-1]))
         fragment.add_prefix('void', VOID)
         fragment.add_prefix('foaf', FOAF)
         fragment.add_prefix('hydra', HYDRA)
         fragment.add_prefix('purl', Namespace('http://purl.org/dc/terms/'))
-
-        # # ajouter pour dbpedia shema pas sure dutout
-        # fragment.add_prefix('dbpedia', DBPEDIA)
-        # fragment.add_prefix('dbpedia', SHEMA)
 
     def _tpf_uri(self, tpf_url, tag=None):
         if tag is None:

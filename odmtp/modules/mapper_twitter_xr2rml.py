@@ -7,15 +7,12 @@ from odmtp.modules.mapper import Mapper
 class MapperTwitterXr2rml(Mapper):
 
     def result_set_2_rdf(self, result_set, reduced_mapping, fragment):
-        print result_set
         for tweet in result_set:
             for s, p, o in reduced_mapping.mapping:
                 subject = s
                 obj = o
                 splited_subject = subject.split('{')
-                # recupere le prefixe <http...> du sujet
                 subject_prefix = splited_subject[0]
-                # je met la variable dans subject_jsonpath
                 subject_jsonpath = parse(splited_subject[1].split('}')[0])
                 subject_values = [match.value for match in subject_jsonpath.find(tweet)]
                 if '$.' in obj:

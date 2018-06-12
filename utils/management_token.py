@@ -1,5 +1,4 @@
 import datetime
-# pour recuperer l'adresse IP du client
 import ipware
 import json
 import os
@@ -24,10 +23,8 @@ def linkedin_verification_ip_token_date(request):
         json_data = open(USERS_FILE_PATH, 'r')
     users = json.load(json_data)
     if ip in users:
-        # sauvgarder le token et date correspondant a IP
         user = users[ip]
         today = datetime.datetime.now()
-        # si une erreurs survient au niveau de la cle mettre des crochet autour du 1
         date_use = datetime.datetime.strptime(user['Date'], "%Y-%m-%d %H:%M:%S.%f")
         tmp = date_use+datetime.timedelta(days=60)
         if tmp > today:

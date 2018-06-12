@@ -165,4 +165,4 @@
     rr:predicateObjectMap [
       rr:predicate dbpedia:address ;
         rr:objectMap [ xrr:reference "$.name" ];
-    ].
+].

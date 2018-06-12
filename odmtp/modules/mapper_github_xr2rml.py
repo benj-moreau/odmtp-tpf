@@ -7,7 +7,6 @@ from odmtp.modules.mapper import Mapper
 class MapperGithubXr2rml(Mapper):
 
     def result_set_2_rdf(self, result_set, reduced_mapping, fragment):
-        print result_set
         for repo in result_set:
             for s, p, o in reduced_mapping.mapping:
                 subject = s
