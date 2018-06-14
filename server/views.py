@@ -21,13 +21,9 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import redirect
 
 from linkedin import linkedin
-from django.http import JsonResponse
 from django.conf import settings
-from time import gmtime, strftime
 from datetime import datetime
-import ipware
 import json
-import datetime
 import os
 
 
@@ -81,7 +77,7 @@ def linkedin_tpf_server(request):
 
 @require_http_methods(['GET'])
 def linkedin_authentication_tpf_server(request):
-    authentication = linkedin.LinkedInAuthentication(settings.CLIENT_ID_LINKEDIN, settings.CLIENT_SECRET_LINKEDIN, "http://127.0.0.1:8000/linkedin/authentification/", ['r_emailaddress', 'r_basicprofile', 'w_share', 'rw_company_admin'])
+    authentication = linkedin.LinkedInAuthentication(settings.CLIENT_ID_LINKEDIN, settings.CLIENT_SECRET_LINKEDIN, "http://{}/linkedin/authentification/".format(request.get_host()), ['r_emailaddress', 'r_basicprofile', 'w_share', 'rw_company_admin'])
     authorization_code = request.GET.get('code', None)
     if authorization_code:
         authentication.authorization_code = authorization_code
@@ -91,13 +87,13 @@ def linkedin_authentication_tpf_server(request):
         users = json.load(json_data)
         users[ip] = {}
         users[ip]['token'] = linkedin_token[0]
-        today = datetime.datetime.now()
+        today = datetime.now()
         users[ip]['Date'] = today.strftime('%Y-%m-%d %H:%M:%S.%f')
         f = open(os.path.abspath('utils/users.json'), "w")
         f.write(json.dumps(users, indent=4))
         f.close()
         json_data.close()
-        response = HttpResponse(linkedin_token[0])
+        response = HttpResponse("Authentication success, You can now query your profile.")
         response['Access-Control-Allow-Origin'] = '*'
     else:
         if not linkedin_verification_ip_token_date(request):

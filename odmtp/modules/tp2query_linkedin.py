@@ -34,6 +34,7 @@ class Tp2QueryLinkedin(Tp2Query):
             ACCESS_TOKEN = users[client_ip]['token']
             application = linkedin.LinkedInApplication(token=ACCESS_TOKEN)
             result_set = application.get_profile(selectors=['id', 'first-name', 'last-name', 'location', 'positions', 'num-connections', 'picture-url', 'educations', 'public-profile-url'])
+            print result_set
         else:
             raise ValueError("Not authentified, go to: linkedin/authentification/")
         self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, total_nb_triples, request, tpf_url)

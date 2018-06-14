@@ -14,7 +14,7 @@ def get_client_ip(request):
 def linkedin_verification_ip_token_date(request):
     ip = get_client_ip(request)
     my_file = os.path.isfile(USERS_FILE_PATH)
-    if my_file is True:
+    if my_file:
         json_data = open(USERS_FILE_PATH, 'r')
     else:
         json_data = open(USERS_FILE_PATH, 'w')
