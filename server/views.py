@@ -66,11 +66,14 @@ def linkedin_tpf_server(request):
                              request.GET.get('predicate'),
                              request.GET.get('object'))
     fragment = Fragment()
-    Odmtp(TrimmerXr2rmllinkedin(), Tp2QueryLinkedin(), MapperlinkedinXr2rml()).match(tpq, fragment, request)
-    response = HttpResponse(
-        fragment.serialize(),
-        content_type='application/trig; charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename="fragment.trig"'
+    try:
+        Odmtp(TrimmerXr2rmllinkedin(), Tp2QueryLinkedin(), MapperlinkedinXr2rml()).match(tpq, fragment, request)
+        response = HttpResponse(
+            fragment.serialize(),
+            content_type='application/trig; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="fragment.trig"'
+    except ValueError:
+        response = HttpResponse("You need to be authenticated first. Go to linkedin/authentification/")
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
@@ -94,7 +97,6 @@ def linkedin_authentication_tpf_server(request):
         f.close()
         json_data.close()
         response = HttpResponse("Authentication success, You can now query your profile.")
-        response['Access-Control-Allow-Origin'] = '*'
     else:
         if not linkedin_verification_ip_token_date(request):
             linkedin.LinkedInApplication(authentication)
@@ -103,6 +105,7 @@ def linkedin_authentication_tpf_server(request):
             ip = get_client_ip(request)
             json_data = open(os.path.abspath('utils/users.json'), 'r')
             users = json.load(json_data)
-            response = HttpResponse(users[ip]['token'])
+            response = HttpResponse("Authentication success, You can now query your profile.")
             json_data.close()
+    response['Access-Control-Allow-Origin'] = '*'
     return response
