@@ -23,27 +23,29 @@ class Xr2rmlMapper(object):
         return Xr2rmlMapping(self.preprocessed_mapping, self.logical_sources)
 
     def _preprocess_mapping(self):
-        resources = []
+        resources = {}
         for s in self.mapping.subjects():
-            subject = None
             if isinstance(s, URIRef) and s not in resources:
-                resources.append(s)
                 for node in self.mapping.objects(subject=s, predicate=rr.subjectMap):
                     for template in self.mapping.objects(subject=node, predicate=rr.template):
-                        subject = template
+                        resources[s] = template
                         for type_class in self.mapping.objects(subject=node, predicate=rr['class']):
-                            self.preprocessed_mapping.add((subject, RDF.type, type_class))
-                for node in self.mapping.objects(subject=s, predicate=rr.predicateObjectMap):
-                    predicate = None
-                    for predicate_object in self.mapping.objects(subject=node, predicate=rr.predicate):
-                        predicate = predicate_object
-                        for object_map in self.mapping.objects(subject=node, predicate=rr.objectMap):
-                            for reference in self.mapping.objects(subject=object_map, predicate=xrr.reference):
-                                self.preprocessed_mapping.add((subject, predicate, reference))
+                            self.preprocessed_mapping.add((resources[s], RDF.type, type_class))
                 for node in self.mapping.objects(subject=s, predicate=xrr.logicalSource):
-                    subject_prefix = subject.split('{')[0]
+                    subject_prefix = resources[s].split('{')[0]
                     self.logical_sources[subject_prefix] = {}
                     for query in self.mapping.objects(subject=node, predicate=xrr.query):
                         self.logical_sources[subject_prefix]['query'] = query
                     for iterator in self.mapping.objects(subject=node, predicate=rml.iterator):
                         self.logical_sources[subject_prefix]['iterator'] = iterator
+        for s in resources:
+            for node in self.mapping.objects(subject=s, predicate=rr.predicateObjectMap):
+                predicate = None
+                for predicate_object in self.mapping.objects(subject=node, predicate=rr.predicate):
+                    predicate = predicate_object
+                    for object_map in self.mapping.objects(subject=node, predicate=rr.objectMap):
+                        for reference in self.mapping.objects(subject=object_map, predicate=xrr.reference):
+                            self.preprocessed_mapping.add((resources[s], predicate, reference))
+                        for parent in self.mapping.objects(subject=object_map, predicate=rr.parentTriplesMap):
+                            if parent != resources[s]:
+                                self.preprocessed_mapping.add((resources[s], predicate, resources[parent]))

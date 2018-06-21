@@ -16,9 +16,17 @@ class MapperlinkedinXr2rml(Mapper):
             subject_jsonpath = parse(splited_subject[1].split('}')[0])
             subject_values = [match.value for match in subject_jsonpath.find(result_set)]
             if '$.' in obj:
-                object_jsonpath = parse(obj.split('{')[0].split('}')[0])
-                object_values = [match.value for match in object_jsonpath.find(result_set)]
-                for object_value in object_values:
-                    fragment.add_data_triple(URIRef("%s%s" % (subject_prefix, quote(subject_values[0].encode('utf8')))), p, Literal(object_value))
+                if 'http' in obj:
+                    splited_object = obj.split('{')
+                    object_prefix = splited_object[0]
+                    object_jsonpath = parse(splited_object[1].split('}')[0])
+                    object_values = [match.value for match in object_jsonpath.find(result_set)]
+                    for object_value in object_values:
+                        fragment.add_data_triple(URIRef("%s%s" % (subject_prefix, quote(subject_values[0].encode('utf8')))), p, URIRef("%s%s" % (object_prefix, quote(object_values[0].encode('utf8')))))
+                else:
+                    object_jsonpath = parse(obj.split('{')[0].split('}')[0])
+                    object_values = [match.value for match in object_jsonpath.find(result_set)]
+                    for object_value in object_values:
+                        fragment.add_data_triple(URIRef("%s%s" % (subject_prefix, quote(subject_values[0].encode('utf8')))), p, Literal(object_value))
             else:
                 fragment.add_data_triple(URIRef("%s%s" % (subject_prefix,  quote(subject_values[0].encode('utf8')))), p, obj)
