@@ -5,8 +5,7 @@ ODMTP (On Demand Mapper with Triple pattern matching) enables triple pattern mat
 
 # Online demo
 
-ODMTP's implemented for Twitter API & Github API are available on herokuapp. You can run SPARQL queries using the online TPF client demo: [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2Ftwitter%2F&query=PREFIX%20it%3A%20%3Chttp%3A%2F%2Fwww.influencetracker.com%2Fontology%23%3E%0A%0ASELECT%20%3Fs%20WHERE%20%7B%0A%20%7B%3Fs%20it%3AincludedHashtag%20%22ISWC2017%22.%7D%20UNION%20%7B%3Fs%20it%3AincludedHashtag%20%22iswc2017%22.%7D%0A%7D) for Twitter and [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fodmtp.herokuapp.com%2Fgithub%2F&query=PREFIX%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%0A%0ASELECT%20%3Frepo%0AWHERE%20%7B%0A%3Frepo%20schema%3Alanguage%20%22Java%22%0A%7D) for Github (limited to 60 request per hour).
-> HerokuApp go to sleep after 1 hour of inactivity. If a timeout occurs, re run your query.
+ODMTP's implemented for Twitter API & Github API are available online. You can run SPARQL queries using the online TPF client demo: [Here](http://client.linkeddatafragments.org/#datasources=http%3A%2F%2Fodmtp.priloo.univ-nantes.fr%2Ftwitter%2F&query=PREFIX%20it%3A%20%3Chttp%3A%2F%2Fwww.influencetracker.com%2Fontology%23%3E%0A%0ASELECT%20%3Fs%20WHERE%20%7B%0A%20%7B%3Fs%20it%3AincludedHashtag%20%22ISWC2017%22.%7D%20UNION%20%7B%3Fs%20it%3AincludedHashtag%20%22iswc2018%22.%7D%0A%7D) for Twitter and [Here](http://client.linkeddatafragments.org/#datasources=http%3A%2F%2Fodmtp.priloo.univ-nantes.fr%2Fgithub%2F&query=PREFIX%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%0A%0ASELECT%20%3Frepo%0AWHERE%20%7B%0A%3Frepo%20schema%3Alanguage%20%22Java%22%0A%7D) for Github (limited to 60 request per hour).
 
 ODMTP approach is already used on [OpenDataSoft Plateform](https://data.opendatasoft.com) and can be tested [Here](http://client.linkeddatafragments.org/#datasources=https%3A%2F%2Fpublic.opendatasoft.com%2Fapi%2Ftpf%2Froman-emperors%2F&query=PREFIX%20roman%3A%20%3Chttps%3A%2F%2Fpublic.opendatasoft.com%2Fld%2Fontologies%2Froman-emperors%2F%3E%0A%0ASELECT%20%3Fname%20WHERE%20%7B%0A%20%20%3Fs%20roman%3Abirth_cty%20%22Rome%22%5E%5Exsd%3Astring%20.%0A%20%20%3Fs%20roman%3Areign_start%20%3Fdate%20.%0A%20%20%20%20FILTER%20(%3Fdate%20%3E%20%220014-12-31T00%3A00%3A00%2B00%3A00%22%5E%5Exsd%3AdateTime)%0A%20%20%3Fs%20%20roman%3Aname%20%3Fname%20.%0A%7D).
 
@@ -49,7 +48,7 @@ You can run this SPARQL query over http://127.0.0.1:8000/twitter/ to retrieve tw
 PREFIX it: <http://www.influencetracker.com/ontology#>
 
 SELECT ?s WHERE {
- {?s it:includedHashtag "ISWC2017".} UNION {?s it:includedHashtag "iswc2017".}
+ {?s it:includedHashtag "ISWC2018".} UNION {?s it:includedHashtag "iswc2018".}
 }
 ```
 
