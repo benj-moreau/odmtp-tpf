@@ -55,6 +55,7 @@ class Tp2QueryLinkedin(Tp2Query):
         VOID = Namespace("http://rdfs.org/ns/void#")
         FOAF = Namespace("http://xmlns.com/foaf/0.1/")
         DCTERMS = Namespace("http://purl.org/dc/terms/")
+        PROV = Namespace("http://www.w3.org/ns/prov#")
 
         fragment.add_meta_quad(meta_graph, FOAF['primaryTopic'], dataset_base, meta_graph)
         fragment.add_meta_quad(data_graph, RDF.type, VOID['Dataset'], meta_graph)
@@ -83,6 +84,10 @@ class Tp2QueryLinkedin(Tp2Query):
         fragment.add_meta_quad(source, VOID['triples'], Literal(total_nb_triples, datatype=XSD.int), meta_graph)
         fragment.add_meta_quad(source, HYDRA['itemsPerPage'], Literal(nb_triple_per_page, datatype=XSD.int), meta_graph)
         fragment.add_meta_quad(source, HYDRA['first'], self._tpf_url(dataset_base, 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
+
+        fragment.add_meta_quad(source, RDF.type, PROV['Entity'], meta_graph)
+        fragment.add_meta_quad(source, PROV['wasDerivedFrom'], URIRef("https://api.linkedin.com/v1/"), meta_graph)
+        fragment.add_meta_quad(source, PROV['wasGeneratedBy'], URIRef("https://github.com/benjimor/odmtp-tpf"), meta_graph)
         if tpq.page > 1:
             fragment.add_meta_quad(source, HYDRA['previous'], self._tpf_url(dataset_base, 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
         if not last_result:
@@ -92,6 +97,7 @@ class Tp2QueryLinkedin(Tp2Query):
         fragment.add_prefix('foaf', FOAF)
         fragment.add_prefix('hydra', HYDRA)
         fragment.add_prefix('purl', Namespace('http://purl.org/dc/terms/'))
+        fragment.add_prefix('prov', PROV)
 
     def _tpf_uri(self, tpf_url, tag=None):
         if tag is None:

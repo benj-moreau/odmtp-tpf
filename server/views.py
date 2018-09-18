@@ -96,7 +96,7 @@ def linkedin_authentication_tpf_server(request):
         f.write(json.dumps(users, indent=4))
         f.close()
         json_data.close()
-        response = HttpResponse("Authentication success, You can now query your profile.")
+        response = redirect('http://client.linkeddatafragments.org/#datasources=http%3A%2F%2Fodmtp.priloo.univ-nantes.fr%2Flinkedin%2F&query=SELECT%20%3Fs%20%3Fp%20%3Fo%0AWHERE%20%7B%0A%20%3Fs%20%3Fp%20%3Fo%0A%7D')
     else:
         if not linkedin_verification_ip_token_date(request):
             linkedin.LinkedInApplication(authentication)
@@ -105,7 +105,7 @@ def linkedin_authentication_tpf_server(request):
             ip = get_client_ip(request)
             json_data = open(os.path.abspath('utils/users.json'), 'r')
             users = json.load(json_data)
-            response = HttpResponse("Authentication success, You can now query your profile.")
+            response = redirect('http://client.linkeddatafragments.org/#datasources=http%3A%2F%2Fodmtp.priloo.univ-nantes.fr%2Flinkedin%2F&query=SELECT%20%3Fs%20%3Fp%20%3Fo%0AWHERE%20%7B%0A%20%3Fs%20%3Fp%20%3Fo%0A%7D')
             json_data.close()
     response['Access-Control-Allow-Origin'] = '*'
     return response

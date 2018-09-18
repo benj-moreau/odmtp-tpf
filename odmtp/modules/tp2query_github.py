@@ -65,10 +65,10 @@ class Tp2QueryGithub(Tp2Query):
             last_result = True
         total_nb_triples = total_count * number_of_triples_per_repo
         nb_triple_per_page = REPO_PER_PAGE * number_of_triples_per_repo
-        self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request, tpf_url)
+        self._frament_fill_meta(tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request, tpf_url, query_url)
         return result_set
 
-    def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request, tpf_url):
+    def _frament_fill_meta(self, tpq, fragment, last_result, total_nb_triples, nb_triple_per_page, request, tpf_url, query_url):
         meta_graph = self._tpf_uri(tpf_url, 'metadata')
         fragment.add_graph(meta_graph)
         dataset_base = self._tpf_uri(tpf_url)
@@ -83,6 +83,7 @@ class Tp2QueryGithub(Tp2Query):
         VOID = Namespace("http://rdfs.org/ns/void#")
         FOAF = Namespace("http://xmlns.com/foaf/0.1/")
         DCTERMS = Namespace("http://purl.org/dc/terms/")
+        PROV = Namespace("http://www.w3.org/ns/prov#")
 
         fragment.add_meta_quad(meta_graph, FOAF['primaryTopic'], dataset_base, meta_graph)
         fragment.add_meta_quad(data_graph, HYDRA['member'], data_graph, meta_graph)
@@ -112,6 +113,10 @@ class Tp2QueryGithub(Tp2Query):
         fragment.add_meta_quad(source, VOID['triples'], Literal(total_nb_triples, datatype=XSD.int), meta_graph)
         fragment.add_meta_quad(source, HYDRA['itemsPerPage'], Literal(nb_triple_per_page, datatype=XSD.int), meta_graph)
         fragment.add_meta_quad(source, HYDRA['first'], self._tpf_url(dataset_base, 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
+
+        fragment.add_meta_quad(source, RDF.type, PROV['Entity'], meta_graph)
+        fragment.add_meta_quad(source, PROV['wasDerivedFrom'], URIRef(query_url), meta_graph)
+        fragment.add_meta_quad(source, PROV['wasGeneratedBy'], URIRef("https://github.com/benjimor/odmtp-tpf"), meta_graph)
         if tpq.page > 1:
             fragment.add_meta_quad(source, HYDRA['previous'], self._tpf_url(dataset_base, tpq.page - 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
         if not last_result:
@@ -121,6 +126,7 @@ class Tp2QueryGithub(Tp2Query):
         fragment.add_prefix('foaf', FOAF)
         fragment.add_prefix('hydra', HYDRA)
         fragment.add_prefix('purl', Namespace('http://purl.org/dc/terms/'))
+        fragment.add_prefix('prov', PROV)
 
     def _tpf_uri(self, tpf_url, tag=None):
         if tag is None:
