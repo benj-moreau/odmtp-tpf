@@ -27,7 +27,7 @@ import json
 import os
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'HEAD'])
 def twitter_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
@@ -43,7 +43,7 @@ def twitter_tpf_server(request):
     return response
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'HEAD'])
 def github_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
@@ -59,7 +59,7 @@ def github_tpf_server(request):
     return response
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'HEAD'])
 def linkedin_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
