@@ -1,10 +1,16 @@
 from rdflib import URIRef
+import copy
 
 
 class Trimmer(object):
 
+    def __init__(self):
+        self.mapping = None
+
     def get_reduced_mapping(self, tpq):
-        raise NotImplementedError()
+        reduced_mapping = copy.deepcopy(self.mapping)
+        self.mapping_triple_pattern_matching(reduced_mapping, tpq)
+        return reduced_mapping
 
     def mapping_triple_pattern_matching(self, xr2rml_mapping, tpq):
         if tpq.predicate is not None:

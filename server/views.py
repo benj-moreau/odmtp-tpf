@@ -34,11 +34,26 @@ def twitter_tpf_server(request):
                              request.GET.get('predicate'),
                              request.GET.get('object'))
     fragment = Fragment()
-    Odmtp(TrimmerXr2rmlTwitter(), Tp2QueryTwitter(), MapperTwitterXr2rml()).match(tpq, fragment, request)
+    odmtp = request.session.get('odmtp_twitter')
+    if not odmtp:
+        odmtp = Odmtp(TrimmerXr2rmlTwitter(), Tp2QueryTwitter(), MapperTwitterXr2rml())
+        request.session['odmtp_twitter'] = odmtp
+    odmtp.match(tpq, fragment, request)
     response = HttpResponse(
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename="fragment.trig"'
+    response['Content-Disposition'] = 'attachment; filename="twitter_tpf_fragment.trig"'
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+@require_http_methods(['GET'])
+def twitter_mapping(request):
+    with open('./mapping/mapping_tweet.ttl', 'r') as content_file:
+        file_content = content_file.read()
+    response = HttpResponse(
+        file_content,
+        content_type='text/turtle; charset=utf-8')
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
@@ -50,11 +65,26 @@ def github_tpf_server(request):
                              request.GET.get('predicate'),
                              request.GET.get('object'))
     fragment = Fragment()
-    Odmtp(TrimmerXr2rmlGithub(), Tp2QueryGithub(), MapperGithubXr2rml()).match(tpq, fragment, request)
+    odmtp = request.session.get('odmtp_github')
+    if not odmtp:
+        odmtp = Odmtp(TrimmerXr2rmlGithub(), Tp2QueryGithub(), MapperGithubXr2rml())
+        request.session['odmtp_github'] = odmtp
+    odmtp.match(tpq, fragment, request)
     response = HttpResponse(
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename="fragment.trig"'
+    response['Content-Disposition'] = 'attachment; filename="github_tpf_fragment.trig"'
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+@require_http_methods(['GET'])
+def github_mapping(request):
+    with open('./mapping/mapping_github.ttl', 'r') as content_file:
+        file_content = content_file.read()
+    response = HttpResponse(
+        file_content,
+        content_type='text/turtle; charset=utf-8')
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
@@ -67,13 +97,28 @@ def linkedin_tpf_server(request):
                              request.GET.get('object'))
     fragment = Fragment()
     try:
-        Odmtp(TrimmerXr2rmllinkedin(), Tp2QueryLinkedin(), MapperlinkedinXr2rml()).match(tpq, fragment, request)
+        odmtp = request.session.get('odmtp_linkedin')
+        if not odmtp:
+            odmtp = Odmtp(TrimmerXr2rmllinkedin(), Tp2QueryLinkedin(), MapperlinkedinXr2rml())
+            request.session['odmtp_linkedin'] = odmtp
+        odmtp.match(tpq, fragment, request)
         response = HttpResponse(
             fragment.serialize(),
             content_type='application/trig; charset=utf-8')
-        response['Content-Disposition'] = 'attachment; filename="fragment.trig"'
+        response['Content-Disposition'] = 'attachment; filename="linkedin_tpf_fragment.trig"'
     except ValueError:
         response = HttpResponse("You need to be authenticated first. Go to linkedin/authentification/")
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+@require_http_methods(['GET'])
+def linkedin_mapping(request):
+    with open('./mapping/mapping_linkedin.ttl', 'r') as content_file:
+        file_content = content_file.read()
+    response = HttpResponse(
+        file_content,
+        content_type='text/turtle; charset=utf-8')
     response['Access-Control-Allow-Origin'] = '*'
     return response
 

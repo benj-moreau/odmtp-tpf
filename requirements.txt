@@ -5,3 +5,4 @@ rdflib==4.2.2
 requests==2.18.4
 python-linkedin==4.1
 django-ipware==2.1.0
+python-memcached==1.59

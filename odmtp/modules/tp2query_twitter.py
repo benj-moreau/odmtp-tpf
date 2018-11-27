@@ -133,7 +133,7 @@ class Tp2QueryTwitter(Tp2Query):
             fragment.add_meta_quad(source, HYDRA['previous'], self._tpf_url(dataset_base, tpq.page - 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
         if not last_result:
             fragment.add_meta_quad(source, HYDRA['next'], self._tpf_url(dataset_base, tpq.page + 1, tpq.subject, tpq.predicate, tpq.obj), meta_graph)
-        fragment.add_prefix('twittertpf', Namespace("%s#" % tpf_url[:-1]))
+        fragment.add_prefix('twittertpf', Namespace(tpf_url))
         fragment.add_prefix('void', VOID)
         fragment.add_prefix('foaf', FOAF)
         fragment.add_prefix('hydra', HYDRA)
@@ -143,7 +143,7 @@ class Tp2QueryTwitter(Tp2Query):
     def _tpf_uri(self, tpf_url, tag=None):
         if tag is None:
             return URIRef(tpf_url)
-        return URIRef("%s%s" % (tpf_url[:-1], '#%s' % tag))
+        return URIRef("%s%s" % (tpf_url, tag))
 
     def _tpf_url(self, dataset_base, page, subject, predicate, obj):
         subject_parameter = subject if subject else ''

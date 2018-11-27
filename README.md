@@ -39,6 +39,10 @@ python manage.py runserver
 
 The TPF server should run at: http://127.0.0.1:8000/
 
+# Mappings
+Mappings are accessible at: `http://127.0.0.1:8000/{api}/mapping`
+example: http://127.0.0.1:8000/twitter/mapping
+
 # Examples of Simple Queries
 You can use any Triple Pattern Fragment client: http://linkeddatafragments.org/software/
 to run SPARQL queries over twitter API and github Repo API V3
