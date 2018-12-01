@@ -3,6 +3,8 @@ odmtp-tpf is a Triple Pattern Fragment server using Python, Django and ODMTP.
 
 ODMTP (On Demand Mapper with Triple pattern matching) enables triple pattern matching over non-RDF datasources.
 
+ODMTP support inference (see Semantic Reasoner (Inference) section)
+
 # Online demo
 
 ODMTP's implemented for Twitter API, Github API and Linkedin API are available online. You can run SPARQL queries using the online TPF client demo: [Here](http://client.linkeddatafragments.org/#datasources=http%3A%2F%2Fodmtp.priloo.univ-nantes.fr%2Ftwitter%2F&query=PREFIX%20it%3A%20%3Chttp%3A%2F%2Fwww.influencetracker.com%2Fontology%23%3E%0A%0ASELECT%20%3Fs%20WHERE%20%7B%0A%20%7B%3Fs%20it%3AincludedHashtag%20%22ISWC2018%22.%7D%20UNION%20%7B%3Fs%20it%3AincludedHashtag%20%22iswc2018%22.%7D%0A%7D) for Twitter,  [Here](http://client.linkeddatafragments.org/#datasources=http%3A%2F%2Fodmtp.priloo.univ-nantes.fr%2Fgithub%2F&query=PREFIX%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%0A%0ASELECT%20%3Frepo%0AWHERE%20%7B%0A%3Frepo%20schema%3Alanguage%20%22Java%22%0A%7D) for Github (limited to 60 request per hour) and [Here](http://odmtp.priloo.univ-nantes.fr/linkedin/authentification/) for your Linkedin profile (you will need to login to access your personal LI profile).
