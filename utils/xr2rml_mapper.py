@@ -1,6 +1,7 @@
 from rdflib import Graph, URIRef, Namespace, RDF
 
 from utils.xr2rml_mapping import Xr2rmlMapping
+from utils.rml_closer import OWLLiteCloser
 
 rr = Namespace("http://www.w3.org/ns/r2rml#")
 rml = Namespace("http://semweb.mmlab.be/ns/rml#")
@@ -10,12 +11,21 @@ xrr = Namespace("http://www.i3s.unice.fr/ns/xr2rml#")
 class Xr2rmlMapper(object):
     """This class partialy implements the XR2RML mapping langage."""
 
-    def __init__(self, filename):
+    def __init__(self, filename, ontology_filename=None):
         self.mapping = Graph()
         self.preprocessed_mapping = Graph()
         with open(filename, 'r') as content_file:
             file_content = content_file.read()
         self.mapping.parse(format="turtle", data=file_content)
+        if ontology_filename:
+            with open(ontology_filename, 'r') as content_file:
+                ontology_content = content_file.read()
+            ontology = Graph().parse(format="turtle", data=ontology_content)
+            rml_closer = OWLLiteCloser()
+            rml_closer.setOnto(ontology)
+            rml_closer.setRML(self.mapping)
+            rml_closer.enrich()
+            self.mapping = rml_closer.rml
         self.logical_sources = {}
         self._preprocess_mapping()
 

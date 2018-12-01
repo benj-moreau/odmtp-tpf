@@ -15,6 +15,7 @@ from tpf.tpq import TriplePatternQuery
 from tpf.fragment import Fragment
 
 from utils.management_token import get_client_ip, linkedin_verification_ip_token_date
+from utils.rml_closer import OWLLiteCloser
 
 from django.http.response import HttpResponse
 from django.views.decorators.http import require_http_methods
@@ -23,6 +24,7 @@ from django.shortcuts import redirect
 from linkedin import linkedin
 from django.conf import settings
 from datetime import datetime
+from rdflib import Graph
 import json
 import os
 
@@ -47,12 +49,46 @@ def twitter_tpf_server(request):
     return response
 
 
+@require_http_methods(['GET', 'HEAD'])
+def extended_twitter_tpf_server(request):
+    tpq = TriplePatternQuery(request.GET.get('page', '1'),
+                             request.GET.get('subject'),
+                             request.GET.get('predicate'),
+                             request.GET.get('object'))
+    fragment = Fragment()
+    odmtp = request.session.get('extended_odmtp_twitter')
+    if not odmtp:
+        odmtp = Odmtp(TrimmerXr2rmlTwitter(True), Tp2QueryTwitter(), MapperTwitterXr2rml())
+        request.session['extended_odmtp_twitter'] = odmtp
+    odmtp.match(tpq, fragment, request)
+    response = HttpResponse(
+        fragment.serialize(),
+        content_type='application/trig; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="twitter_tpf_fragment.trig"'
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
 @require_http_methods(['GET'])
 def twitter_mapping(request):
-    with open('./mapping/mapping_tweet.ttl', 'r') as content_file:
-        file_content = content_file.read()
+    mapping = Graph().parse('./mapping/mapping_tweet.ttl', format='ttl')
     response = HttpResponse(
-        file_content,
+        mapping.serialize(format='turtle'),
+        content_type='text/turtle; charset=utf-8')
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+@require_http_methods(['GET'])
+def twitter_extended_mapping(request):
+    extended_mapping = Graph().parse('./mapping/mapping_tweet.ttl', format='ttl')
+    rml_closer = OWLLiteCloser()
+    rml_closer.setOnto(Graph().parse('./ontologie/twitter_ontologie.ttl', format='ttl'))
+    rml_closer.setRML(extended_mapping)
+    rml_closer.enrich()
+    extended_mapping = rml_closer.rml
+    response = HttpResponse(
+        extended_mapping.serialize(format='turtle'),
         content_type='text/turtle; charset=utf-8')
     response['Access-Control-Allow-Origin'] = '*'
     return response
@@ -78,12 +114,46 @@ def github_tpf_server(request):
     return response
 
 
+@require_http_methods(['GET', 'HEAD'])
+def extended_github_tpf_server(request):
+    tpq = TriplePatternQuery(request.GET.get('page', '1'),
+                             request.GET.get('subject'),
+                             request.GET.get('predicate'),
+                             request.GET.get('object'))
+    fragment = Fragment()
+    odmtp = request.session.get('extended_odmtp_github')
+    if not odmtp:
+        odmtp = Odmtp(TrimmerXr2rmlGithub(True), Tp2QueryGithub(), MapperGithubXr2rml())
+        request.session['extended_odmtp_github'] = odmtp
+    odmtp.match(tpq, fragment, request)
+    response = HttpResponse(
+        fragment.serialize(),
+        content_type='application/trig; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="github_tpf_fragment.trig"'
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
 @require_http_methods(['GET'])
 def github_mapping(request):
-    with open('./mapping/mapping_github.ttl', 'r') as content_file:
-        file_content = content_file.read()
+    mapping = Graph().parse('./mapping/mapping_github.ttl', format='ttl')
     response = HttpResponse(
-        file_content,
+        mapping.serialize(format='turtle'),
+        content_type='text/turtle; charset=utf-8')
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+@require_http_methods(['GET'])
+def github_extended_mapping(request):
+    extended_mapping = Graph().parse('./mapping/mapping_github.ttl', format='ttl')
+    rml_closer = OWLLiteCloser()
+    rml_closer.setOnto(Graph().parse('./ontologie/github_ontologie.ttl', format='ttl'))
+    rml_closer.setRML(extended_mapping)
+    rml_closer.enrich()
+    extended_mapping = rml_closer.rml
+    response = HttpResponse(
+        extended_mapping.serialize(format='turtle'),
         content_type='text/turtle; charset=utf-8')
     response['Access-Control-Allow-Origin'] = '*'
     return response
@@ -112,12 +182,49 @@ def linkedin_tpf_server(request):
     return response
 
 
+@require_http_methods(['GET', 'HEAD'])
+def extended_linkedin_tpf_server(request):
+    tpq = TriplePatternQuery(request.GET.get('page', '1'),
+                             request.GET.get('subject'),
+                             request.GET.get('predicate'),
+                             request.GET.get('object'))
+    fragment = Fragment()
+    try:
+        odmtp = request.session.get('extended_odmtp_linkedin')
+        if not odmtp:
+            odmtp = Odmtp(TrimmerXr2rmllinkedin(True), Tp2QueryLinkedin(), MapperlinkedinXr2rml())
+            request.session['extended_odmtp_linkedin'] = odmtp
+        odmtp.match(tpq, fragment, request)
+        response = HttpResponse(
+            fragment.serialize(),
+            content_type='application/trig; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="linkedin_tpf_fragment.trig"'
+    except ValueError:
+        response = HttpResponse("You need to be authenticated first. Go to linkedin/authentification/")
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
 @require_http_methods(['GET'])
 def linkedin_mapping(request):
-    with open('./mapping/mapping_linkedin.ttl', 'r') as content_file:
-        file_content = content_file.read()
+    mapping = Graph().parse('./mapping/mapping_linkedin.ttl', format='ttl')
     response = HttpResponse(
-        file_content,
+        mapping.serialize(format='turtle'),
+        content_type='text/turtle; charset=utf-8')
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+@require_http_methods(['GET'])
+def linkedin_extended_mapping(request):
+    extended_mapping = Graph().parse('./mapping/mapping_linkedin.ttl', format='ttl')
+    rml_closer = OWLLiteCloser()
+    rml_closer.setOnto(Graph().parse('./ontologie/linkedin_ontologie.ttl', format='ttl'))
+    rml_closer.setRML(extended_mapping)
+    rml_closer.enrich()
+    extended_mapping = rml_closer.rml
+    response = HttpResponse(
+        extended_mapping.serialize(format='turtle'),
         content_type='text/turtle; charset=utf-8')
     response['Access-Control-Allow-Origin'] = '*'
     return response

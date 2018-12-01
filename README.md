@@ -39,9 +39,17 @@ python manage.py runserver
 
 The TPF server should run at: http://127.0.0.1:8000/
 
+# Semantic Reasoner (Inference)
+To support inference, ODMTP use ontologies to materialize implicite triples of mappings.
+Each API can be queried using extended mappings at: `http://127.0.0.1:8000/{api}/extended`
+Example: http://127.0.0.1:8000/twitter/extended
+
 # Mappings
 Mappings are accessible at: `http://127.0.0.1:8000/{api}/mapping`
-example: http://127.0.0.1:8000/twitter/mapping
+Example: http://127.0.0.1:8000/twitter/mapping
+
+Extended mapping are accessible at `http://127.0.0.1:8000/{api}/mapping/extended`
+Example: http://127.0.0.1:8000/twitter/mapping/extended
 
 # Examples of Simple Queries
 You can use any Triple Pattern Fragment client: http://linkeddatafragments.org/software/
@@ -52,7 +60,7 @@ You can run this SPARQL query over http://127.0.0.1:8000/twitter/ to retrieve tw
 PREFIX it: <http://www.influencetracker.com/ontology#>
 
 SELECT ?s WHERE {
- {?s it:includedHashtag "ISWC2018".} UNION {?s it:includedHashtag "iswc2018".}
+ ?s it:includedHashtag "SemanticWeb".
 }
 ```
 

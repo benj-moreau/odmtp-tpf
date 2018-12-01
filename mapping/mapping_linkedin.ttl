@@ -7,8 +7,6 @@
 @prefix dbpedia: <http://dbpedia.org/ontology/> .
 @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
 
-
-
 <#Profile>  rml:logicalSource [ rml:iterator "$.[*]" ;
             xrr:query "https://api.linkedin.com/v1/people/"
              ] ;
