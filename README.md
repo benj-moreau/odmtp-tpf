@@ -12,7 +12,7 @@ ODMTP's implemented for Twitter API, Github API and Linkedin API are available o
 ODMTP approach is already used on [OpenDataSoft Plateform](https://data.opendatasoft.com) and can be tested [Here](http://query.linkeddatafragments.org/#datasources=https%3A%2F%2Fpublic.opendatasoft.com%2Fapi%2Ftpf%2Froman-emperors%2F&query=PREFIX%20roman%3A%20%3Chttps%3A%2F%2Fpublic.opendatasoft.com%2Fld%2Fontologies%2Froman-emperors%2F%3E%0A%0ASELECT%20%3Fname%20WHERE%20%7B%0A%20%20%3Fs%20roman%3Abirth_cty%20%22Rome%22%5E%5Exsd%3Astring%20.%0A%20%20%3Fs%20roman%3Areign_start%20%3Fdate%20.%0A%20%20%20%20FILTER%20(%3Fdate%20%3E%20%220014-12-31T00%3A00%3A00%2B00%3A00%22%5E%5Exsd%3AdateTime)%0A%20%20%3Fs%20%20roman%3Aname%20%3Fname%20.%0A%7D).
 
 # Instructions
-## Prelude
+## Installation
 
 #### macOS
 You need to install [Homebrew](http://brew.sh/).
@@ -42,9 +42,37 @@ python manage.py runserver
 The TPF server should run at: http://127.0.0.1:8000/
 
 # Semantic Reasoner (Inference)
-To support inference, ODMTP use ontologies to materialize implicite triples of mappings.
+RDF data contains explicit and implicit triples that can be inferred using rules described in ontologies.
+To support inference, ODMTP use ontologies to materialize implicit triples of mappings (extended mappings).
 Each API can be queried using extended mappings at: `http://127.0.0.1:8000/{api}/extended`
 Example: http://127.0.0.1:8000/twitter/extended
+
+However, mappings only contains schema of the corresponding RDF dataset.
+Thus, rules that apply on RDF instances cannot be applied on mappings.
+
+## Supported rules
+
+
+
+### Implemented rules
+
+| Rule Name                        |                    if data contains ...                   | ... then add                 |
+|----------------------------------|:---------------------------------------------------------:|------------------------------|
+| rdfs2 (domain)                   | aaa rdfs:domain xxx . uuu aaa yyy .                       | uuu rdf:type xxx .           |
+| rdfs3 (range)                    | aaa rdfs:range xxx  .uuu aaa vvv .                        | vvv rdf:type xxx .           |
+| rdfs5 (subProperty transitivity) | uuu rdfs:subPropertyOf vvv . vvv rdfs:subPropertyOf xxx . | uuu rdfs:subPropertyOf xxx . |
+| rdfs7 (subProperty)              | aaa rdfs:subPropertyOf bbb . uuu aaa yyy .                | uuu bbb yyy .                |
+| rdfs9 (subClassOf)               | uuu rdfs:subClassOf xxx . vvv rdf:type uuu .              | vvv rdf:type xxx .           |
+| rdfs11 (subClassOf transitivity) | uuu rdfs:subClassOf vvv . vvv rdfs:subClassOf xxx .       | uuu rdfs:subClassOf xxx .    |
+| owl sameAs Class                 | uuu owl:sameAs xxx . vvv rdf:type uuu .                   | vvv rdf:type xxx .           |
+| owl sameAs Property              | aaa owl:sameAs bbb . uuu aaa yyy .                        | uuu bbb yyy .                |
+| owl equivalentClass              | uuu owl:equivalentClass xxx . vvv rdf:type uuu .          | vvv rdf:type xxx .           |
+| owl equivalentProperty           | aaa owl:equivalentProperty bbb . uuu aaa yyy .            | uuu bbb yyy .                |
+
+### Not implemented rules
+
+## Not supported rules
+
 
 # Mappings
 Mappings are accessible at: `http://127.0.0.1:8000/{api}/mapping`
