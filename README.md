@@ -58,16 +58,16 @@ Thus, rules that apply on RDF instances cannot be applied on mappings.
 
 | Rule Name                        |                    if data contains ...                   | ... then add                 |
 |----------------------------------|:---------------------------------------------------------:|------------------------------|
-| rdfs2 (domain)                   | aaa rdfs:domain xxx . uuu aaa yyy .                       | uuu rdf:type xxx .           |
-| rdfs3 (range)                    | aaa rdfs:range xxx  .uuu aaa vvv .                        | vvv rdf:type xxx .           |
-| rdfs5 (subProperty transitivity) | uuu rdfs:subPropertyOf vvv . vvv rdfs:subPropertyOf xxx . | uuu rdfs:subPropertyOf xxx . |
-| rdfs7 (subProperty)              | aaa rdfs:subPropertyOf bbb . uuu aaa yyy .                | uuu bbb yyy .                |
-| rdfs9 (subClassOf)               | uuu rdfs:subClassOf xxx . vvv rdf:type uuu .              | vvv rdf:type xxx .           |
-| rdfs11 (subClassOf transitivity) | uuu rdfs:subClassOf vvv . vvv rdfs:subClassOf xxx .       | uuu rdfs:subClassOf xxx .    |
-| owl sameAs Class                 | uuu owl:sameAs xxx . vvv rdf:type uuu .                   | vvv rdf:type xxx .           |
-| owl sameAs Property              | aaa owl:sameAs bbb . uuu aaa yyy .                        | uuu bbb yyy .                |
-| owl equivalentClass              | uuu owl:equivalentClass xxx . vvv rdf:type uuu .          | vvv rdf:type xxx .           |
-| owl equivalentProperty           | aaa owl:equivalentProperty bbb . uuu aaa yyy .            | uuu bbb yyy .                |
+| rdfs2 (domain)                   | aaa rdfs:domain xxx .<br>uuu aaa yyy .                       | uuu rdf:type xxx .           |
+| rdfs3 (range)                    | aaa rdfs:range xxx  .<br>uuu aaa vvv .                        | vvv rdf:type xxx .           |
+| rdfs5 (subProperty transitivity) | uuu rdfs:subPropertyOf vvv .<br>vvv rdfs:subPropertyOf xxx . | uuu rdfs:subPropertyOf xxx . |
+| rdfs7 (subProperty)              | aaa rdfs:subPropertyOf bbb .<br>uuu aaa yyy .                | uuu bbb yyy .                |
+| rdfs9 (subClassOf)               | uuu rdfs:subClassOf xxx .<br>vvv rdf:type uuu .              | vvv rdf:type xxx .           |
+| rdfs11 (subClassOf transitivity) | uuu rdfs:subClassOf vvv .<br>vvv rdfs:subClassOf xxx .       | uuu rdfs:subClassOf xxx .    |
+| owl sameAs Class                 | uuu owl:sameAs xxx .<br>vvv rdf:type uuu .                   | vvv rdf:type xxx .           |
+| owl sameAs Property              | aaa owl:sameAs bbb .<br>uuu aaa yyy .                        | uuu bbb yyy .                |
+| owl equivalentClass              | uuu owl:equivalentClass xxx .<br>vvv rdf:type uuu .          | vvv rdf:type xxx .           |
+| owl equivalentProperty           | aaa owl:equivalentProperty bbb .<br>uuu aaa yyy .            | uuu bbb yyy .                |
 
 ### Not implemented rules
 
