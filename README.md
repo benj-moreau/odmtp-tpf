@@ -52,11 +52,11 @@ Thus, rules that apply on RDF instances cannot be applied on mappings.
 
 ## Supported rules
 
-
+All rules that apply to schema (class and properties) are supported by ODMTP Semantic Reasoner.
 
 ### Implemented rules
 
-| Rule Name                        |                    if data contains ...                   | ... then add                 |
+| Rule Name                        |                    if dataset contains ...                   | ... then add                 |
 |----------------------------------|:---------------------------------------------------------:|------------------------------|
 | rdfs2 (domain)                   | aaa rdfs:domain xxx .<br>uuu aaa yyy .                       | uuu rdf:type xxx .           |
 | rdfs3 (range)                    | aaa rdfs:range xxx  .<br>uuu aaa vvv .                        | vvv rdf:type xxx .           |
@@ -71,8 +71,18 @@ Thus, rules that apply on RDF instances cannot be applied on mappings.
 
 ### Not implemented rules
 
+Not all supported rules are yet implemented.
+Complete list of [RDFS](https://www.w3.org/TR/rdf11-mt/#rdfs-entailment) and [OWL-LD](http://semanticweb.org/OWLLD/#Rules) rules.
+
 ## Not supported rules
 
+Rules that applies on instances are not supported by ODMTP Semantic Reasoner.
+examples:
+
+| Rule Name             |            if data contains ...           | ... then add     | Comment                                                                        |
+|-----------------------|:-----------------------------------------:|------------------|--------------------------------------------------------------------------------|
+| owl-ld eq-rep-subject | subj1 owl:sameAs subj2 .<br> subj1 aaa obj1 . | subj2 aaa obj1 . | Not supported if one of the two subject<br> is not defined in ontology or mapping  |
+| owl-ld eq-rep-object  | obj1 owl:sameAs obj2 .<br> subj1 aaa obj1 .   | subj1 aaa obj2 . | Not supported if subject or objects are<br> not defined in ontology or mapping     |
 
 # Mappings
 Mappings are accessible at: `http://127.0.0.1:8000/{api}/mapping`
