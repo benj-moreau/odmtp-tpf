@@ -15,7 +15,7 @@ from tpf.tpq import TriplePatternQuery
 from tpf.fragment import Fragment
 
 from utils.management_token import get_client_ip, linkedin_verification_ip_token_date
-from utils.rml_closer import OWLLiteCloser
+from utils.rml_closer import OWLLiteCloser, RDFSCloser
 
 from django.http.response import HttpResponse
 from django.views.decorators.http import require_http_methods
@@ -60,7 +60,7 @@ def extended_twitter_tpf_server(request):
     if not odmtp:
         odmtp = Odmtp(TrimmerXr2rmlTwitter(True), Tp2QueryTwitter(), MapperTwitterXr2rml())
         request.session['extended_odmtp_twitter'] = odmtp
-    odmtp.match(tpq, fragment, request)
+    odmtp.match(tpq, fragment, request, extended=True)
     response = HttpResponse(
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')
@@ -83,6 +83,11 @@ def twitter_mapping(request):
 def twitter_extended_mapping(request):
     extended_mapping = Graph().parse('./mapping/mapping_tweet.ttl', format='ttl')
     rml_closer = OWLLiteCloser()
+    rml_closer.setOnto(Graph().parse('./ontologie/twitter_ontologie.ttl', format='ttl'))
+    rml_closer.setRML(extended_mapping)
+    rml_closer.enrich()
+    extended_mapping = rml_closer.rml
+    rml_closer = RDFSCloser()
     rml_closer.setOnto(Graph().parse('./ontologie/twitter_ontologie.ttl', format='ttl'))
     rml_closer.setRML(extended_mapping)
     rml_closer.enrich()
@@ -125,7 +130,7 @@ def extended_github_tpf_server(request):
     if not odmtp:
         odmtp = Odmtp(TrimmerXr2rmlGithub(True), Tp2QueryGithub(), MapperGithubXr2rml())
         request.session['extended_odmtp_github'] = odmtp
-    odmtp.match(tpq, fragment, request)
+    odmtp.match(tpq, fragment, request, extended=True)
     response = HttpResponse(
         fragment.serialize(),
         content_type='application/trig; charset=utf-8')
@@ -152,6 +157,11 @@ def github_extended_mapping(request):
     rml_closer.setRML(extended_mapping)
     rml_closer.enrich()
     extended_mapping = rml_closer.rml
+    rml_closer = RDFSCloser()
+    rml_closer.setOnto(Graph().parse('./ontologie/github_ontologie.ttl', format='ttl'))
+    rml_closer.setRML(extended_mapping)
+    rml_closer.enrich()
+    extended_mapping = rml_closer.rml
     response = HttpResponse(
         extended_mapping.serialize(format='turtle'),
         content_type='text/turtle; charset=utf-8')
@@ -171,7 +181,7 @@ def linkedin_tpf_server(request):
         if not odmtp:
             odmtp = Odmtp(TrimmerXr2rmllinkedin(), Tp2QueryLinkedin(), MapperlinkedinXr2rml())
             request.session['odmtp_linkedin'] = odmtp
-        odmtp.match(tpq, fragment, request)
+        odmtp.match(tpq, fragment, request, extended=True)
         response = HttpResponse(
             fragment.serialize(),
             content_type='application/trig; charset=utf-8')
@@ -219,6 +229,11 @@ def linkedin_mapping(request):
 def linkedin_extended_mapping(request):
     extended_mapping = Graph().parse('./mapping/mapping_linkedin.ttl', format='ttl')
     rml_closer = OWLLiteCloser()
+    rml_closer.setOnto(Graph().parse('./ontologie/linkedin_ontologie.ttl', format='ttl'))
+    rml_closer.setRML(extended_mapping)
+    rml_closer.enrich()
+    extended_mapping = rml_closer.rml
+    rml_closer = RDFSCloser()
     rml_closer.setOnto(Graph().parse('./ontologie/linkedin_ontologie.ttl', format='ttl'))
     rml_closer.setRML(extended_mapping)
     rml_closer.enrich()

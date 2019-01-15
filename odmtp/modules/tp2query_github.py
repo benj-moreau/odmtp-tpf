@@ -22,14 +22,14 @@ GITHUB_QUALIFIERS = {
 }
 
 REPO_PER_PAGE = 5
-TPF_URL = '%s://%s/github/'
+TPF_URL = '%s://%s/github/%s'
 
 
 class Tp2QueryGithub(Tp2Query):
 
-    def request(self, tpq, reduced_mapping, fragment, request):
+    def request(self, tpq, reduced_mapping, fragment, request, extended):
         tpf_url = urlparse(request.build_absolute_uri())
-        tpf_url = TPF_URL % (tpf_url.scheme, tpf_url.netloc)
+        tpf_url = TPF_URL % (tpf_url.scheme, tpf_url.netloc, 'extended/') if extended else TPF_URL % (tpf_url.scheme, tpf_url.netloc, '')
         last_result = False
         result_set = None
         number_of_triples_per_repo = len(reduced_mapping.mapping)
@@ -136,6 +136,12 @@ class Tp2QueryGithub(Tp2Query):
     def _tpf_url(self, dataset_base, page, subject, predicate, obj):
         subject_parameter = subject if subject else ''
         predicate_parameter = predicate if predicate else ''
-        object_parameter = ('"%s"^^%s' % (obj, obj._datatype)) if obj else ''
+        if obj:
+            if isinstance(obj, URIRef):
+                object_parameter = obj
+            else:
+                object_parameter = ('"%s"^^%s' % (obj, obj._datatype))
+        else:
+            object_parameter = ''
         parameters = {'page': page, 'subject': subject_parameter, 'predicate': predicate_parameter, 'object': object_parameter}
         return URIRef("%s?%s" % (dataset_base, urlencode(parameters)))

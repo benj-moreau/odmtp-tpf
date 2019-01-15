@@ -13,16 +13,16 @@ from utils.management_token import USERS_FILE_PATH, linkedin_verification_ip_tok
 
 BASE_QUERY = 'filter:safe'
 
-TPF_URL = '%s://%s/linkedin/'
+TPF_URL = '%s://%s/linkedin/%s'
 
 LAST_PAGE = 1
 
 
 class Tp2QueryLinkedin(Tp2Query):
 
-    def request(self, tpq, reduced_mapping, fragment, request):
+    def request(self, tpq, reduced_mapping, fragment, request, extended):
         tpf_url = urlparse(request.build_absolute_uri())
-        tpf_url = TPF_URL % (tpf_url.scheme, tpf_url.netloc)
+        tpf_url = TPF_URL % (tpf_url.scheme, tpf_url.netloc, 'extended/') if extended else TPF_URL % (tpf_url.scheme, tpf_url.netloc, '')
         validiteToken = linkedin_verification_ip_token_date(request)
         result_set = None
         last_result = True

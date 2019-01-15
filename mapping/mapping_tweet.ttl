@@ -2,7 +2,7 @@
 @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
 @prefix xrr: <http://www.i3s.unice.fr/ns/xr2rml#> .
 @prefix schema: <http://schema.org/> .
-@prefix it: <http://www.influencetracker.com/ontology#> .
+@prefix it: <http://www.influenceTracker.com/ontology#> .
 
 <#Tweets>
   xrr:logicalSource [

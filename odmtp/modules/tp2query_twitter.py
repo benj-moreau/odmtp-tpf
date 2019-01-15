@@ -22,7 +22,7 @@ BASE_QUERY = 'filter:safe'
 
 TWEETS_PER_PAGE = 5
 
-TPF_URL = '%s://%s/twitter/'
+TPF_URL = '%s://%s/twitter/%s'
 
 # twitter search API returns top 15000 tweets matching query
 # So i set up a limit to count maximum number of result (TWEETS_PER_PAGE * LAST_PAGE)
@@ -31,9 +31,10 @@ LAST_PAGE = 5
 
 class Tp2QueryTwitter(Tp2Query):
 
-    def request(self, tpq, reduced_mapping, fragment, request):
+    def request(self, tpq, reduced_mapping, fragment, request, extended):
         tpf_url = urlparse(request.build_absolute_uri())
-        tpf_url = TPF_URL % (tpf_url.scheme, tpf_url.netloc)
+        tpf_url = TPF_URL % (tpf_url.scheme, tpf_url.netloc, 'extended/') if extended else TPF_URL % (tpf_url.scheme, tpf_url.netloc, '')
+        print tpf_url
         last_result = False
         result_set = None
         query_parameters = {}
@@ -148,6 +149,12 @@ class Tp2QueryTwitter(Tp2Query):
     def _tpf_url(self, dataset_base, page, subject, predicate, obj):
         subject_parameter = subject if subject else ''
         predicate_parameter = predicate if predicate else ''
-        object_parameter = ('"%s"^^%s' % (obj, obj._datatype)) if obj else ''
+        if obj:
+            if isinstance(obj, URIRef):
+                object_parameter = obj
+            else:
+                object_parameter = ('"%s"^^%s' % (obj, obj._datatype))
+        else:
+            object_parameter = ''
         parameters = {'page': page, 'subject': subject_parameter, 'predicate': predicate_parameter, 'object': object_parameter}
         return URIRef("%s?%s" % (dataset_base, urlencode(parameters)))

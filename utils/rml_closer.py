@@ -1,6 +1,6 @@
 import rdflib
 
-from rdflib import RDFS, OWL, Namespace
+from rdflib import RDFS, OWL, Namespace, URIRef
 
 RR = Namespace("http://www.w3.org/ns/r2rml#")
 RML = Namespace("http://semweb.mmlab.be/ns/rml#")
@@ -43,11 +43,11 @@ class RMLCloser(object):
 
 
 	def loadRML(self,fileName) :
-		self.rml.parse(fileName,format="n3")
+		self.rml.parse(fileName,format="ttl")
 		# print("RML graph has %s statements." % len(self.rml))
 
 	def loadOnto(self,fileName) :
-		self.onto.parse(fileName,format="n3")
+		self.onto.parse(fileName,format="ttl")
 		# print("Ontology graph has %s statements." % len(self.onto))
 
 	def setRML(self, r) :
@@ -66,7 +66,7 @@ class RDFSCloser(RMLCloser):
 	def __init__(self):
 		super(RDFSCloser, self).__init__()
 		self.rules1 = (self.subsomptionRule, )
-		self.rules2 = (self.subpropertyRule, self.domainRule, self.rangeRule)
+		self.rules2 = (self.subpropertyRule, )
 
 	# ===========================================================================================
 	# Gestion de la subsomption des concepts
@@ -100,7 +100,7 @@ class RDFSCloser(RMLCloser):
 	# ]
 	def subpropertyRule(self,m,s,lpom, pom, p):
 		change = False
-		for q in self.onto.objects(p,RDFS.subPropertyOf) :
+		for q in self.onto.objects(p, RDFS.subPropertyOf):
 			t = (pom,RR['predicate'],q)
 			# print("(subProperty) find: ",t)
 			if t not in self.rml :

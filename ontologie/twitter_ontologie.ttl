@@ -1057,9 +1057,6 @@ schema:about a rdf:Property ;
     schema:sameAs <https://schema.org/about> ;
     rdfs:comment "The subject matter of the content." .
 
-
-
-
 <http://www.influenceTracker.com/ontology>
   a owl:Ontology ;
   rdfs:label "Influence Tracker"@en ;
@@ -1141,7 +1138,8 @@ The property relates an it:TwitterAccount to an it:TwitterAccount in case that t
 The property relates an it:User to an it:Hashtag that has been included in the user’s tweets. Cardinality 0..*
 """@en ;
   rdfs:range <http://www.influenceTracker.com/ontology#Hashtag> ;
-  rdfs:domain <http://www.influenceTracker.com/ontology#User> .
+  rdfs:domain <http://www.influenceTracker.com/ontology#User> ;
+  rdfs:subPropertyOf <http://schema.org/keywords> .
 
 <http://www.influenceTracker.com/ontology#includedImage>
   a owl:ObjectProperty ;
