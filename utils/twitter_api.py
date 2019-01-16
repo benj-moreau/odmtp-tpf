@@ -1,6 +1,7 @@
 import json
 
 from urllib2 import urlopen, Request, HTTPError
+from django.conf import settings
 
 
 API_ENDPOINT = 'https://api.twitter.com'
@@ -8,7 +9,6 @@ API_VERSION = '1.1'
 REQUEST_TOKEN_URL = '%s/oauth2/token' % API_ENDPOINT
 REQUEST_RATE_LIMIT = '%s/%s/application/rate_limit_status.json' % \
                      (API_ENDPOINT, API_VERSION)
-ENCODED_BEARER_TOKEN = 'a0xFdDZ0eDVFQ0FEUjczZjAwdFlidThMRTpjWHlVWEtrYTBubzBYMmtySzE2QTZPSGxjVEd0Nmw3ZERFd0RKbEFYeFp1UWRoQ1YzUg=='
 
 
 class ClientException(Exception):
@@ -48,7 +48,7 @@ class TwitterApi(object):
         request.add_header('Content-Type',
                            'application/x-www-form-urlencoded;charset=UTF-8')
         request.add_header('Authorization',
-                           'Basic %s' % ENCODED_BEARER_TOKEN.decode('utf-8'))
+                           'Basic %s' % settings.ENCODED_BEARER_TOKEN_TWITTER.decode('utf-8'))
 
         request_data = 'grant_type=client_credentials'.encode('ascii')
         request.data = request_data

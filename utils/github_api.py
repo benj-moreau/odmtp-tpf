@@ -1,6 +1,7 @@
 import json
 
 from urllib2 import urlopen, Request, HTTPError
+from django.conf import settings
 
 
 class ClientException(Exception):
@@ -13,6 +14,8 @@ class GithubApi(object):
     def request(self, url):
         """Send an unauthenticated request to the Github API."""
         request = Request(url)
+        request.add_header('Authorization',
+                           'Basic %s' % settings.TOKEN_GITHUB.decode('utf-8'))
         try:
             response = urlopen(request)
         except HTTPError:
