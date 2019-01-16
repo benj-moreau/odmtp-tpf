@@ -181,7 +181,7 @@ def linkedin_tpf_server(request):
         if not odmtp:
             odmtp = Odmtp(TrimmerXr2rmllinkedin(), Tp2QueryLinkedin(), MapperlinkedinXr2rml())
             request.session['odmtp_linkedin'] = odmtp
-        odmtp.match(tpq, fragment, request, extended=True)
+        odmtp.match(tpq, fragment, request)
         response = HttpResponse(
             fragment.serialize(),
             content_type='application/trig; charset=utf-8')
@@ -204,7 +204,7 @@ def extended_linkedin_tpf_server(request):
         if not odmtp:
             odmtp = Odmtp(TrimmerXr2rmllinkedin(True), Tp2QueryLinkedin(), MapperlinkedinXr2rml())
             request.session['extended_odmtp_linkedin'] = odmtp
-        odmtp.match(tpq, fragment, request)
+        odmtp.match(tpq, fragment, request, extended=True)
         response = HttpResponse(
             fragment.serialize(),
             content_type='application/trig; charset=utf-8')
