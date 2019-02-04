@@ -29,7 +29,7 @@ import json
 import os
 
 
-@require_http_methods(['GET', 'HEAD'])
+@require_http_methods(['GET', 'HEAD', 'OPTIONS'])
 def twitter_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
@@ -49,7 +49,7 @@ def twitter_tpf_server(request):
     return response
 
 
-@require_http_methods(['GET', 'HEAD'])
+@require_http_methods(['GET', 'HEAD', 'OPTIONS'])
 def extended_twitter_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
@@ -66,6 +66,7 @@ def extended_twitter_tpf_server(request):
         content_type='application/trig; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="twitter_tpf_fragment.trig"'
     response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Headers'] = 'Accept-Datetime,Accept'
     return response
 
 
@@ -99,7 +100,7 @@ def twitter_extended_mapping(request):
     return response
 
 
-@require_http_methods(['GET', 'HEAD'])
+@require_http_methods(['GET', 'HEAD', 'OPTIONS'])
 def github_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
@@ -116,10 +117,11 @@ def github_tpf_server(request):
         content_type='application/trig; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="github_tpf_fragment.trig"'
     response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Headers'] = 'Accept-Datetime,Accept'
     return response
 
 
-@require_http_methods(['GET', 'HEAD'])
+@require_http_methods(['GET', 'HEAD', 'OPTIONS'])
 def extended_github_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
@@ -136,6 +138,7 @@ def extended_github_tpf_server(request):
         content_type='application/trig; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="github_tpf_fragment.trig"'
     response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Headers'] = 'Accept-Datetime,Accept'
     return response
 
 
@@ -166,10 +169,11 @@ def github_extended_mapping(request):
         extended_mapping.serialize(format='turtle'),
         content_type='text/turtle; charset=utf-8')
     response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Headers'] = 'Accept-Datetime,Accept'
     return response
 
 
-@require_http_methods(['GET', 'HEAD'])
+@require_http_methods(['GET', 'HEAD', 'OPTIONS'])
 def linkedin_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
@@ -189,10 +193,11 @@ def linkedin_tpf_server(request):
     except ValueError:
         response = HttpResponse("You need to be authenticated first. Go to linkedin/authentification/")
     response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Headers'] = 'Accept-Datetime,Accept'
     return response
 
 
-@require_http_methods(['GET', 'HEAD'])
+@require_http_methods(['GET', 'HEAD', 'OPTIONS'])
 def extended_linkedin_tpf_server(request):
     tpq = TriplePatternQuery(request.GET.get('page', '1'),
                              request.GET.get('subject'),
@@ -212,6 +217,7 @@ def extended_linkedin_tpf_server(request):
     except ValueError:
         response = HttpResponse("You need to be authenticated first. Go to linkedin/authentification/")
     response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Headers'] = 'Accept-Datetime,Accept'
     return response
 
 
