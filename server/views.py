@@ -46,6 +46,7 @@ def twitter_tpf_server(request):
         content_type='application/trig; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="twitter_tpf_fragment.trig"'
     response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Headers'] = 'Accept-Datetime,Accept'
     return response
 
 
